@@ -1,0 +1,33 @@
+/* 모바일 반응형 */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+    
+    &-collapsed {
+      transform: translateX(-100%);
+    }
+  }
+  
+  .sidebar-toggle {
+    top: 10px;
+    left: 30px;
+  }
+  
+  .main-content {
+    padding: 20px;
+  }
+  
+  .post-meta {
+    flex-direction: column;
+    
+    > * {
+      margin-bottom: 5px;
+    }
+  }
+} 

@@ -1,0 +1,30 @@
+<footer class="site-footer h-card">
+  <data class="u-url" href="{{ "/" | relative_url }}"></data>
+
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="{{ 'feed.xml' | relative_url }}">
+            <svg class="svg-icon orange">
+              <use xlink:href="{{ 'assets/minima-social-icons.svg#rss' | relative_url }}"></use>
+            </svg><span>RSS 구독</span>
+          </a>
+        </p>
+        <p>{{ site.description | escape }}</p>
+      </div>
+
+      <div class="footer-col">
+        <p>
+          <a href="https://github.com/{{ site.github_username | default: 'jekyll' }}">GitHub</a>
+        </p>
+      </div>
+    </div>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p>{{ site.title | escape }} &copy; {{ 'now' | date: "%Y" }} | Jekyll을 사용하여 제작</p>
+      </div>
+    </div>
+  </div>
+</footer> 

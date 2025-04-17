@@ -1,0 +1,16 @@
+---
+layout: default
+---
+
+<div class="tag-page">
+  <h1 class="page-heading">{{ page.tag }}</h1>
+  
+  <div class="post-list">
+    {% for post in page.posts %}
+    <div class="post-item">
+      <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+      <a href="{{ post.url | relative_url }}" class="post-link">{{ post.title }}</a>
+    </div>
+    {% endfor %}
+  </div>
+</div> 

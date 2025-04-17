@@ -1,0 +1,173 @@
+/* 프로필 스타일 */
+.profile {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  &-image {
+    width: $profile-image-size;
+    height: $profile-image-size;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    background-color: #e1e1e1; /* 이미지가 없을 때를 대비한 배경색 */
+  }
+  
+  &-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  &-bio {
+    font-size: 0.9em;
+    color: $light-text-color;
+    margin-bottom: 15px;
+  }
+}
+
+.social-links {
+  margin-bottom: 20px;
+  
+  a {
+    margin: 0 5px;
+    color: $secondary-color;
+  }
+}
+
+/* 내비게이션 스타일 */
+.nav-title {
+  font-size: 1em;
+  font-weight: bold;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid $dark-border-color;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.menu-arrow {
+  font-size: 0.8em;
+  margin-left: 5px;
+  transition: transform $transition-speed;
+}
+
+.menu-collapsed {
+  display: none;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  li {
+    margin-bottom: 8px;
+  }
+  
+  a {
+    display: block;
+    padding: 5px 0;
+    color: $secondary-color;
+    transition: all 0.2s;
+    
+    &:hover {
+      color: $primary-color;
+      text-decoration: none;
+    }
+    
+    &.active {
+      color: $primary-color;
+      font-weight: bold;
+    }
+  }
+}
+
+/* 포스트 목록 스타일 */
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-item {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid $border-color;
+}
+
+.post-title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.post-meta {
+  display: flex;
+  margin-bottom: 15px;
+  font-size: 0.85em;
+  color: $muted-text-color;
+}
+
+.post-date {
+  margin-right: 15px;
+}
+
+.post-category {
+  margin-right: 15px;
+}
+
+.post-excerpt {
+  margin-bottom: 15px;
+}
+
+.read-more {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+/* 태그 스타일 */
+.post-tags {
+  margin-top: 10px;
+}
+
+.post-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: $border-radius;
+  background-color: $tag-bg-color;
+  color: $text-color;
+  font-size: 0.8em;
+  
+  &:hover {
+    background-color: $tag-hover-color;
+    text-decoration: none;
+  }
+}
+
+/* 카테고리 스타일 */
+.category-list {
+  list-style: none;
+  padding: 0;
+}
+
+.category-item {
+  margin-bottom: 20px;
+}
+
+.category-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid $border-color;
+}
+
+.category-count {
+  font-size: 0.8em;
+  color: $muted-text-color;
+  margin-left: 5px;
+} 

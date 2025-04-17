@@ -1,0 +1,80 @@
+name: Deploy Jekyll site to Pages
+
+on:
+  push:
+    branches: [ "main" ] # main 브랜치에 푸시될 때 실행
+  workflow_dispatch: # 수동 실행 허용
+
+# 작업 실행에 대한 기본 권한 설정
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시 배포 하나만 허용
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # 빌드 작업
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build:ts
+        
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1' # 사용하는 Ruby 버전에 맞게 조정 가능
+          bundler-cache: true # bundle install 실행 및 캐싱 활성화
+          
+      - name: Install additional gems
+        run: |
+          gem install jekyll-tagging
+          bundle install
+          
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        
+      - name: Generate Backlinks & Mindmap
+        run: |
+          mkdir -p _data
+          node _scripts/process_backlinks.js
+          node _scripts/generate_mindmap.js
+        
+      - name: Build with Jekyll
+        # _site 디렉토리에 빌드. GITHUB_PAGES 환경 변수가 설정되면 baseurl이 자동으로 설정됨
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+          
+      - name: Upload artifact
+        # 빌드 결과물을 자동으로 업로드
+        uses: actions/upload-pages-artifact@v3
+
+  # 배포 작업
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # actions/deploy-pages 액션 사용 

@@ -1,0 +1,117 @@
+---
+layout: portfolio
+title: 포트폴리오
+permalink: /portfolio/
+---
+
+<h1 class="portfolio-title">포트폴리오</h1>
+<p class="portfolio-intro">로봇 기술과 시뮬레이션 AI 분야의 연구 프로젝트와 작업물을 소개합니다. 아래 프로젝트들은 제가 연구하고 개발한 로봇 관련 작업들입니다.</p>
+
+<div class="portfolio-grid">
+  {% for post in site.posts %}
+    {% if post.featured or post.portfolio %}
+    <div class="portfolio-item">
+      <div class="portfolio-thumbnail">
+        {% if post.image %}
+        <div class="thumbnail-image" style="background-image: url('{{ post.image | relative_url }}')"></div>
+        {% else %}
+        <div class="thumbnail-fallback theme-color-1">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        {% endif %}
+      </div>
+      <div class="portfolio-content">
+        <h2 class="portfolio-item-title">{{ post.title }}</h2>
+        <div class="portfolio-item-meta">
+          <span class="portfolio-date">
+            <i class="far fa-calendar-alt"></i> {{ post.date | date: "%Y-%m-%d" }}
+          </span>
+          {% if post.categories.size > 0 %}
+          <span class="portfolio-category">
+            <i class="fas fa-folder"></i> {{ post.categories | first }}
+          </span>
+          {% endif %}
+        </div>
+        <div class="portfolio-item-excerpt">{{ post.excerpt }}</div>
+        <a href="{{ post.url | relative_url }}" class="portfolio-readmore">자세히 보기</a>
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+  
+  <!-- 프로젝트가 충분하지 않은 경우를 위한 샘플 프로젝트 카드 -->
+  {% assign featured_count = site.posts | where: "featured", true | size %}
+  {% assign portfolio_count = site.posts | where: "portfolio", true | size %}
+  {% assign total_count = featured_count | plus: portfolio_count %}
+  
+  {% if total_count < 1 %}
+  <div class="portfolio-item">
+    <div class="portfolio-thumbnail">
+      <div class="thumbnail-fallback theme-color-1">
+        <i class="fas fa-robot"></i>
+      </div>
+    </div>
+    <div class="portfolio-content">
+      <h2 class="portfolio-item-title">로봇 제어 시스템 연구</h2>
+      <div class="portfolio-item-meta">
+        <span class="portfolio-date">
+          <i class="far fa-calendar-alt"></i> 2023-01-15
+        </span>
+        <span class="portfolio-category">
+          <i class="fas fa-folder"></i> 로봇공학
+        </span>
+      </div>
+      <div class="portfolio-item-excerpt">
+        자율 주행 로봇의 제어 시스템에 관한 연구 프로젝트입니다. 실시간 센서 데이터 처리와 경로 계획 알고리즘을 통합하여 동적 환경에서 효율적인 움직임을 구현했습니다.
+      </div>
+      <a href="#" class="portfolio-readmore">자세히 보기</a>
+    </div>
+  </div>
+  
+  <div class="portfolio-item">
+    <div class="portfolio-thumbnail">
+      <div class="thumbnail-fallback theme-color-2">
+        <i class="fas fa-brain"></i>
+      </div>
+    </div>
+    <div class="portfolio-content">
+      <h2 class="portfolio-item-title">시뮬레이션 AI 프레임워크</h2>
+      <div class="portfolio-item-meta">
+        <span class="portfolio-date">
+          <i class="far fa-calendar-alt"></i> 2023-03-22
+        </span>
+        <span class="portfolio-category">
+          <i class="fas fa-folder"></i> 인공지능
+        </span>
+      </div>
+      <div class="portfolio-item-excerpt">
+        물리 기반 시뮬레이션 환경에서 AI 에이전트를 훈련시키기 위한 프레임워크입니다. 강화학습을 통해 다양한 로봇 컨트롤 태스크를 효율적으로 학습할 수 있도록 설계되었습니다.
+      </div>
+      <a href="#" class="portfolio-readmore">자세히 보기</a>
+    </div>
+  </div>
+  
+  <div class="portfolio-item">
+    <div class="portfolio-thumbnail">
+      <div class="thumbnail-fallback theme-color-3">
+        <i class="fas fa-microchip"></i>
+      </div>
+    </div>
+    <div class="portfolio-content">
+      <h2 class="portfolio-item-title">딥러닝 기반 로봇 비전 시스템</h2>
+      <div class="portfolio-item-meta">
+        <span class="portfolio-date">
+          <i class="far fa-calendar-alt"></i> 2023-05-10
+        </span>
+        <span class="portfolio-category">
+          <i class="fas fa-folder"></i> 컴퓨터 비전
+        </span>
+      </div>
+      <div class="portfolio-item-excerpt">
+        로봇이 실시간으로 주변 환경을 인식하고 물체를 분류할 수 있는 딥러닝 기반 비전 시스템입니다. 효율적인 객체 인식과 세그멘테이션을 통해 로봇의 환경 인식 능력을 향상시켰습니다.
+      </div>
+      <a href="#" class="portfolio-readmore">자세히 보기</a>
+    </div>
+  </div>
+  {% endif %}
+</div> 

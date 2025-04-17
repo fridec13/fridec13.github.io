@@ -1,0 +1,20 @@
+<div class="giscus-container">
+  <script src="https://giscus.app/client.js"
+          data-repo="{{ site.giscus.repo }}"
+          data-repo-id="{{ site.giscus.repo_id }}"
+          data-category="{{ site.giscus.category }}"
+          data-category-id="{{ site.giscus.category_id }}"
+          data-mapping="{{ site.giscus.mapping | default: 'pathname' }}"
+          data-strict="0"
+          data-reactions-enabled="{{ site.giscus.reactions_enabled | default: '1' }}"
+          data-emit-metadata="{{ site.giscus.emit_metadata | default: '0' }}"
+          data-input-position="{{ site.giscus.input_position | default: 'bottom' }}"
+          data-theme="{{ site.giscus.theme | default: 'light' }}"
+          data-lang="{{ site.giscus.lang | default: 'ko' }}"
+          crossorigin="anonymous"
+          async>
+  </script>
+  <noscript>
+    <p>이 댓글 시스템을 보려면 JavaScript를 활성화해주세요. 또는 <a href="https://github.com/{{ site.giscus.repo }}/discussions">GitHub Discussions</a>에서 직접 댓글을 남길 수 있습니다.</p>
+  </noscript>
+</div> 

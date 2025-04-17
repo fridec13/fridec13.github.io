@@ -1,0 +1,29 @@
+<!-- 카테고리 목록 -->
+<div class="category-list-container">
+  <ul class="category-list">
+    {% assign categories = site.categories | sort %}
+    {% for category in categories %}
+    <li class="category-item">
+      <h3 class="category-title">
+        <a href="{{ '/category/' | append: category[0] | relative_url }}">
+          {{ category[0] }}
+          <span class="category-count">({{ category[1].size }})</span>
+        </a>
+      </h3>
+      <ul class="post-list">
+        {% for post in category[1] limit:5 %}
+        <li>
+          <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+          <a href="{{ post.url | relative_url }}" class="post-link">{{ post.title }}</a>
+        </li>
+        {% endfor %}
+        {% if category[1].size > 5 %}
+        <li class="more-posts">
+          <a href="{{ '/category/' | append: category[0] | relative_url }}">더 보기 ({{ category[1].size | minus: 5 }})</a>
+        </li>
+        {% endif %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+</div> 

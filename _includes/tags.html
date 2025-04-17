@@ -1,0 +1,8 @@
+{% if page.tags.size > 0 %}
+<div class="post-tags">
+  <span class="tags-label">태그:</span>
+  {% for tag in page.tags %}
+    <a class="post-tag" href="{{ site.baseurl }}/tag/{{ tag | slugify }}/">{{ tag }}</a>
+  {% endfor %}
+</div>
+{% endif %} 

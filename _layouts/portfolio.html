@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <link rel="stylesheet" href="{{ '/assets/css/portfolio.css' | relative_url }}">
+  <!-- Font Awesome 아이콘 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="portfolio-body">
+  <!-- 헤더 -->
+  <header class="portfolio-header">
+    <div class="container">
+      <a href="{{ '/' | relative_url }}" class="back-link"><i class="fas fa-arrow-left"></i> 블로그로 돌아가기</a>
+      <h1 class="portfolio-name">{{ site.author }}</h1>
+      <p class="portfolio-tagline">로봇 & 시뮬레이션 AI 연구자</p>
+      <div class="social-links">
+        <a href="https://github.com/fridec13" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="mailto:{{ site.email }}" class="social-link" title="Email"><i class="fas fa-envelope"></i></a>
+        <a href="https://linkedin.com/in/USERNAME" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="portfolio-main">
+    <div class="container">
+      {{ content }}
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="portfolio-footer">
+    <div class="container">
+      <p>&copy; {{ site.time | date: "%Y" }} {{ site.author }}. 모든 권리 보유.</p>
+    </div>
+  </footer>
+</body>
+</html> 

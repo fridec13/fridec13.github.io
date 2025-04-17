@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "ko" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+    <meta name="description" content="{{ site.description }}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+    <!-- Font Awesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <!-- 사이드바 토글 버튼 -->
+      <div id="sidebar-toggle" class="sidebar-toggle">
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      
+      <!-- 사이드바 영역 -->
+      <aside class="sidebar">
+        <div class="profile">
+          <img src="{{ '/assets/images/profile.jpg' | relative_url }}" alt="프로필 이미지" class="profile-image">
+          <div class="profile-name">{{ site.author }}</div>
+          <div class="profile-bio">{{ site.description }}</div>
+          <div class="social-links">
+            <a href="https://github.com/fridec13" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="mailto:{{ site.email }}" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://twitter.com/USERNAME" title="Twitter"><i class="fab fa-twitter"></i></a>
+          </div>
+          <!-- 포트폴리오 모드 전환 버튼 -->
+          <a href="{{ '/portfolio/' | relative_url }}" class="mode-toggle-btn">
+            <i class="fas fa-briefcase"></i> 포트폴리오 보기
+          </a>
+        </div>
+
+        <!-- 메뉴 영역 -->
+        <div class="nav-title">메뉴</div>
+        <ul class="nav-menu">
+          <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>홈</a></li>
+          <li><a href="{{ '/categories' | relative_url }}" {% if page.url contains '/categories' %}class="active"{% endif %}>카테고리</a></li>
+          <li><a href="{{ '/tags' | relative_url }}" {% if page.url contains '/tags' %}class="active"{% endif %}>태그</a></li>
+          <li><a href="{{ '/about' | relative_url }}" {% if page.url == '/about/' %}class="active"{% endif %}>소개</a></li>
+        </ul>
+
+        <!-- 카테고리 목록 -->
+        <div class="nav-title">카테고리</div>
+        <ul class="nav-menu">
+          {% for category in site.categories %}
+          <li>
+            <a href="{{ '/category/' | append: category[0] | relative_url }}">
+              {{ category[0] }} <span class="category-count">({{ category[1].size }})</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- 태그 목록 -->
+        <div class="nav-title">태그</div>
+        <div class="post-tags">
+          {% for tag in site.tags %}
+          <a href="{{ '/tag/' | append: tag[0] | relative_url }}" class="post-tag">{{ tag[0] }}</a>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <!-- 메인 콘텐츠 영역 -->
+      <div class="main-content">
+        <main>
+          {{ content }}
+        </main>
+
+        <footer>
+          <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }}</p>
+        </footer>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{{ '/assets/js/sidebar.js' | relative_url }}"></script>
+  </body>
+</html> 

@@ -1,0 +1,100 @@
+# 사이트 설정
+title: 김성훈의 로봇 & AI 블로그
+description: 로봇과 시뮬레이션 AI에 관한 연구와 개발 기록
+baseurl: "" # 사이트의 서브패스 (예: /blog)
+url: "https://fridec13.github.io" # 도메인 이름
+author: 김성훈
+email: maybecold@naver.com
+
+# 브라우저 캐시 무효화를 위한 빌드 버전
+build_version: "1.0.0"
+
+# 빌드 설정
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+paginate: 5
+paginate_path: "/page/:num/"
+
+# 마크다운 확장 설정
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+
+# 플러그인
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll/tagging
+  - jekyll-sitemap
+  - jekyll-include-cache
+  - jekyll-redirect-from
+  - jekyll-paginate
+
+# 컬렉션 설정
+collections:
+  wiki:
+    output: true
+    permalink: /:collection/:path/
+
+# 기본 레이아웃 설정
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      comments: true
+  - scope:
+      path: ""
+      type: "wiki"
+    values:
+      layout: "post"
+      comments: true
+
+# 태그 설정
+tag_page_layout: tag_page
+tag_page_dir: tag
+tag_permalink_style: pretty
+
+# 카테고리 아카이브 설정
+jekyll-archives:
+  enabled:
+    - categories
+  layout: category
+  permalinks:
+    category: /category/:name/
+
+# Giscus 설정
+giscus:
+  repo: "fridec13/fridec13.github.io"
+  repo-id: "R_kgDOKkSW9g"
+  category: "General"
+  category-id: "DIC_kwDOKkSW9s4CaV2s"
+  mapping: "pathname"
+  reactions-enabled: "1"
+  emit-metadata: "0"
+  lang: "ko"
+
+# Sass/SCSS 설정
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# 제외 파일 및 디렉토리
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - _site
+  - .sass-cache
+  - .jekyll-cache
+  - .idea
+  - .github
+  - README.md
+  - LICENSE
+  - tmp 

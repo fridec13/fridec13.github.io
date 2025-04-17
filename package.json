@@ -1,0 +1,26 @@
+{
+  "name": "jekyll-blog",
+  "version": "1.0.0",
+  "description": "Jekyll 기반 GitHub 블로그",
+  "main": "index.js",
+  "scripts": {
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "start": "bundle exec jekyll serve",
+    "build": "npm run build:ts && bundle exec jekyll build",
+    "postinstall": "npm run build:ts"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "mermaid": "^10.7.0",
+    "prismjs": "^1.29.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/node": "^20.11.0",
+    "@types/prismjs": "^1.26.3",
+    "typescript": "^5.3.3"
+  },
+  "author": "",
+  "license": "MIT"
+} 
