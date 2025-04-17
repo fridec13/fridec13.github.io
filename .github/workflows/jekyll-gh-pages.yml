@@ -36,6 +36,19 @@ jobs:
       - name: Build TypeScript
         run: npm run build:ts
         
+      - name: Ensure JS files are properly copied
+        run: |
+          mkdir -p assets/js
+          ls -la assets/js/
+          echo "Ensuring script.js exists and is not overwritten by TypeScript build"
+          # TypeScript 빌드가 수동으로 만든 스크립트를 덮어쓰지 않도록 백업 후 복원
+          if [ -f "assets/js/script.js" ]; then
+            cp assets/js/script.js assets/js/script.js.bak
+            npm run build:ts || true
+            cp assets/js/script.js.bak assets/js/script.js
+          fi
+          ls -la assets/js/
+        
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
