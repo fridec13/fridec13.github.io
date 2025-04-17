@@ -54,6 +54,7 @@ jobs:
       - name: Generate Backlinks & Mindmap
         run: |
           mkdir -p _data
+          mkdir -p assets/data
           node _scripts/process_backlinks.js
           node _scripts/generate_mindmap.js
         
