@@ -7,6 +7,30 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 머메이드 초기화
   initMermaid();
+  
+  // 본명조 커스텀 블록 처리
+  document.querySelectorAll('pre code.language-serif').forEach(block => {
+    const content = block.textContent;
+    const div = document.createElement('div');
+    div.className = 'serif-block';
+    div.innerHTML = content;
+    
+    // 코드 블록을 새로운 div로 교체
+    const pre = block.parentNode;
+    pre.parentNode.replaceChild(div, pre);
+  });
+  
+  // 기울임체 본명조 블록
+  document.querySelectorAll('pre code.language-serif-italic').forEach(block => {
+    const content = block.textContent;
+    const div = document.createElement('div');
+    div.className = 'serif-block italic';
+    div.innerHTML = content;
+    
+    // 코드 블록을 새로운 div로 교체
+    const pre = block.parentNode;
+    pre.parentNode.replaceChild(div, pre);
+  });
 });
 
 // 코드 블록 처리

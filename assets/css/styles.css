@@ -1,3 +1,12 @@
+/* 본명조 폰트 로드 */
+@font-face {
+  font-family: 'Source Han Serif';
+  src: url('../fonts/sourceserif/SourceHanSerifKR-VF.otf.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* D2Coding 폰트 정의 */
 @font-face {
   font-family: 'D2Coding';
@@ -786,4 +795,23 @@ pre:hover .copy-button {
   pre, code, .prompt-content {
     font-family: 'D2Coding', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   }
+}
+
+/* 본명조 커스텀 블록 스타일 */
+.serif-block {
+  font-family: 'Source Han Serif', 'Noto Serif KR', serif;
+  font-weight: 500;
+  font-stretch: 98%;
+  letter-spacing: -0.04em;
+  line-height: 20pt;
+  background-color: #f9f5f0;
+  padding: 1em;
+  margin: 1em 0;
+  border-left: 3px solid #a87c4f;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.serif-block.italic {
+  font-style: italic;
 } 

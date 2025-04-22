@@ -1,6 +1,6 @@
 # 사이트 설정
-title: 김성훈의 로봇 & AI 블로그
-description: 로봇과 시뮬레이션 AI에 관한 연구와 개발 기록
+title: 가볍게 배워 가볍게 쓰기기
+description: 로봇, AI, 생각 등등등
 baseurl: "" # 사이트의 서브패스 (예: /blog)
 url: "https://fridec13.github.io" # 도메인 이름
 author: 김성훈
@@ -71,12 +71,14 @@ jekyll-archives:
 # Giscus 설정
 giscus:
   repo: "fridec13/fridec13.github.io"
-  repo-id: "R_kgDOKkSW9g"
+  repo-id: "R_kgDOOa_5_g"
   category: "General"
-  category-id: "DIC_kwDOKkSW9s4CaV2s"
+  category-id: "DIC_kwDOOa_5_s4CpVln"
   mapping: "pathname"
   reactions-enabled: "1"
   emit-metadata: "0"
+  input-position: "bottom"
+  theme: "preferred_color_scheme"
   lang: "ko"
 
 # Sass/SCSS 설정
