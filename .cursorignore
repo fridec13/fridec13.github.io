@@ -1,0 +1,25 @@
+# Cursor IDE에서 인덱싱하지 않을 파일/디렉토리
+
+# 빌드 결과물
+_site/
+.jekyll-cache/
+.sass-cache/
+
+# 의존성 디렉토리
+node_modules/
+vendor/
+
+# 큰 폰트 파일
+assets/fonts/
+
+# 로그 파일
+*.log
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# 대용량 미디어 파일
+assets/images/
+assets/videos/
+assets/models/ 
