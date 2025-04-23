@@ -28,7 +28,11 @@ title: 블로그 홈
   {% if paginator.total_pages > 1 %}
   <div class="pagination">
     {% if paginator.previous_page %}
-      <a href="{{ paginator.previous_page_path | relative_url }}">&laquo; 이전</a>
+      {% if paginator.previous_page == 1 %}
+        <a href="{{ '/' | relative_url }}">&laquo; 이전</a>
+      {% else %}
+        <a href="{{ paginator.previous_page_path | relative_url }}">&laquo; 이전</a>
+      {% endif %}
     {% endif %}
     
     {% for page in (1..paginator.total_pages) %}
