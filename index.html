@@ -35,7 +35,11 @@ title: 블로그 홈
       {% if page == paginator.page %}
         <strong>{{ page }}</strong>
       {% else %}
-        <a href="{{ site.paginate_path | relative_url | replace: ':num', page }}">{{ page }}</a>
+        {% if page == 1 %}
+          <a href="{{ '/' | relative_url }}">{{ page }}</a>
+        {% else %}
+          <a href="{{ site.paginate_path | relative_url | replace: ':num', page }}">{{ page }}</a>
+        {% endif %}
       {% endif %}
     {% endfor %}
     
