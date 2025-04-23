@@ -5,6 +5,7 @@ baseurl: "" # 사이트의 서브패스 (예: /blog)
 url: "https://fridec13.github.io" # 도메인 이름
 author: 김성훈
 email: maybecold@naver.com
+published: true
 future: true
 # 브라우저 캐시 무효화를 위한 빌드 버전
 build_version: "1.0.0"
