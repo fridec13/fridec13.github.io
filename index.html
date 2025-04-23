@@ -18,7 +18,7 @@ title: 블로그 홈
           </span>
           {% endif %}
         </div>
-        <div class="post-excerpt">{{ post.excerpt }}</div>
+        <div class="post-excerpt">{{ post.content | strip_html | truncate: 200 }}</div>
         <a href="{{ post.url | relative_url }}" class="read-more">자세히 보기 &raquo;</a>
       </li>
     {% endfor %}
