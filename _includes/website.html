@@ -1,0 +1,84 @@
+{% comment %}
+웹사이트 미리보기 인클루드 파일
+사용법: {% include website.html url="https://example.com" title="사이트 제목" description="사이트 설명" image="이미지URL" %}
+{% endcomment %}
+
+<div class="website-preview">
+  <div class="website-card">
+    {% if include.image %}
+    <div class="website-image">
+      <img src="{{ include.image }}" alt="{{ include.title | default: '웹사이트 미리보기' }}">
+    </div>
+    {% endif %}
+    <div class="website-content">
+      <h3 class="website-title">
+        {% if include.url %}
+        <a href="{{ include.url }}" target="_blank" rel="noopener noreferrer">{{ include.title | default: include.url }}</a>
+        {% else %}
+        {{ include.title | default: "웹사이트 제목" }}
+        {% endif %}
+      </h3>
+      {% if include.description %}
+      <p class="website-description">{{ include.description }}</p>
+      {% endif %}
+      {% if include.url %}
+      <div class="website-url">
+        <a href="{{ include.url }}" target="_blank" rel="noopener noreferrer">{{ include.url }}</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .website-preview {
+    margin: 1.5rem 0;
+  }
+  .website-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  .website-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .website-image img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+  }
+  .website-content {
+    padding: 1rem;
+  }
+  .website-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+  }
+  .website-title a {
+    color: #0366d6;
+    text-decoration: none;
+  }
+  .website-title a:hover {
+    text-decoration: underline;
+  }
+  .website-description {
+    color: #444;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  .website-url {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    color: #666;
+    word-break: break-all;
+  }
+  .website-url a {
+    color: #666;
+    text-decoration: none;
+  }
+  .website-url a:hover {
+    text-decoration: underline;
+  }
+</style>
