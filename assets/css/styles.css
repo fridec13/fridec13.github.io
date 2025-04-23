@@ -174,13 +174,33 @@ header h1 {
 
 .post-meta {
   display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
   margin-bottom: 15px;
   font-size: 0.85em;
   color: #767676;
 }
 
-.post-date {
-  margin-right: 15px;
+.post-date,
+.post-work-date,
+.post-work-end-date,
+.post-work-hours {
+  display: flex;
+  align-items: center;
+}
+
+.post-date i,
+.post-work-date i,
+.post-work-end-date i,
+.post-work-hours i,
+.post-category i {
+  margin-right: 5px;
+}
+
+.work-duration {
+  margin-left: 5px;
+  font-size: 0.9em;
+  color: #999;
 }
 
 .post-category {

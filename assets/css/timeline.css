@@ -1,0 +1,171 @@
+/**
+ * 타임라인 스타일
+ */
+
+.timeline-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.page-title {
+  margin-bottom: 10px;
+}
+
+.timeline-intro {
+  margin-bottom: 30px;
+  color: #666;
+}
+
+/* 필터 영역 */
+.timeline-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.timeline-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 타임라인 구조 */
+.timeline {
+  position: relative;
+  margin: 40px 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 120px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #e1e1e1;
+}
+
+.timeline-item {
+  display: flex;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 116px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--primary-color, #0366d6);
+  top: 10px;
+  z-index: 1;
+}
+
+.timeline-date {
+  flex: 0 0 100px;
+  font-size: 14px;
+  color: #666;
+  padding-top: 5px;
+  text-align: right;
+  padding-right: 30px;
+}
+
+.timeline-duration {
+  display: block;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.duration-days {
+  color: #999;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-left: 40px;
+  padding-bottom: 20px;
+}
+
+.timeline-title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.timeline-title a {
+  color: #333;
+  text-decoration: none;
+}
+
+.timeline-title a:hover {
+  color: var(--primary-color, #0366d6);
+}
+
+.timeline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.timeline-category a {
+  color: #0366d6;
+}
+
+.timeline-hours {
+  display: inline-flex;
+  align-items: center;
+}
+
+.timeline-hours i {
+  margin-right: 5px;
+}
+
+.timeline-excerpt {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.timeline-empty-message {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  border: 1px dashed #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .timeline::before {
+    left: 20px;
+  }
+  
+  .timeline-dot {
+    left: 16px;
+  }
+  
+  .timeline-item {
+    flex-direction: column;
+  }
+  
+  .timeline-date {
+    flex: none;
+    text-align: left;
+    padding-left: 40px;
+    padding-right: 0;
+    margin-bottom: 5px;
+  }
+  
+  .timeline-content {
+    padding-left: 40px;
+  }
+} 

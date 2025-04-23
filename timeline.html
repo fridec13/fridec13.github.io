@@ -1,0 +1,129 @@
+---
+layout: page
+title: 작업 타임라인
+---
+
+<div class="timeline-container">
+  <h1 class="page-title">작업 타임라인</h1>
+  <p class="timeline-intro">제가 진행한 다양한 작업들의 타임라인입니다. 작업 시작일을 기준으로 정렬되어 있습니다.</p>
+  
+  <div class="timeline-filter">
+    <select id="timeline-year-filter">
+      <option value="all">모든 년도</option>
+      {% assign years = "" | split: "" %}
+      {% for post in site.posts %}
+        {% if post.work_start_date %}
+          {% assign year = post.work_start_date | date: "%Y" %}
+          {% unless years contains year %}
+            {% assign years = years | push: year %}
+            <option value="{{ year }}">{{ year }}년</option>
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    </select>
+    
+    <select id="timeline-category-filter">
+      <option value="all">모든 카테고리</option>
+      {% for category in site.categories %}
+        <option value="{{ category[0] }}">{{ category[0] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  
+  <div class="timeline">
+    {% assign sorted_posts = site.posts | sort: 'work_start_date' | reverse %}
+    {% for post in sorted_posts %}
+      {% if post.work_start_date %}
+      <div class="timeline-item" 
+           data-year="{{ post.work_start_date | date: '%Y' }}" 
+           data-category="{% for cat in post.categories %}{{ cat }} {% endfor %}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">
+          <span class="timeline-start-date">{{ post.work_start_date | date: "%Y-%m-%d" }}</span>
+          {% if post.work_end_date %}
+          <span class="timeline-duration">
+            ~ {{ post.work_end_date | date: "%Y-%m-%d" }}
+            <span class="duration-days">
+              {% assign start_seconds = post.work_start_date | date: '%s' | plus: 0 %}
+              {% assign end_seconds = post.work_end_date | date: '%s' | plus: 0 %}
+              {% assign duration_seconds = end_seconds | minus: start_seconds %}
+              {% assign duration_days = duration_seconds | divided_by: 86400 | plus: 1 %}
+              ({{ duration_days }}일)
+            </span>
+          </span>
+          {% endif %}
+        </div>
+        <div class="timeline-content">
+          <h3 class="timeline-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h3>
+          <div class="timeline-meta">
+            {% if post.categories.size > 0 %}
+            <span class="timeline-category">
+              <i class="fas fa-folder"></i>
+              {% for category in post.categories %}
+              <a href="{{ '/category/' | append: category | relative_url }}">{{ category }}</a>{% unless forloop.last %}, {% endunless %}
+              {% endfor %}
+            </span>
+            {% endif %}
+            {% if post.work_hours %}
+            <span class="timeline-hours">
+              <i class="fas fa-clock"></i> 총 작업 시간: {{ post.work_hours }}시간
+            </span>
+            {% endif %}
+          </div>
+          {% if post.excerpt %}
+          <div class="timeline-excerpt">
+            {{ post.excerpt | strip_html | truncate: 150 }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+  <div class="timeline-empty-message" style="display: none;">
+    <p>해당 조건에 맞는 작업이 없습니다.</p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const yearFilter = document.getElementById('timeline-year-filter');
+    const categoryFilter = document.getElementById('timeline-category-filter');
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    const emptyMessage = document.querySelector('.timeline-empty-message');
+    
+    function filterTimeline() {
+      const selectedYear = yearFilter.value;
+      const selectedCategory = categoryFilter.value;
+      let visibleCount = 0;
+      
+      timelineItems.forEach(item => {
+        const itemYear = item.getAttribute('data-year');
+        const itemCategories = item.getAttribute('data-category').split(' ');
+        
+        const yearMatch = selectedYear === 'all' || itemYear === selectedYear;
+        const categoryMatch = selectedCategory === 'all' || itemCategories.includes(selectedCategory);
+        
+        if (yearMatch && categoryMatch) {
+          item.style.display = 'flex';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      // 표시할 항목이 없으면 메시지 표시
+      if (visibleCount === 0) {
+        emptyMessage.style.display = 'block';
+      } else {
+        emptyMessage.style.display = 'none';
+      }
+    }
+    
+    yearFilter.addEventListener('change', filterTimeline);
+    categoryFilter.addEventListener('change', filterTimeline);
+  });
+</script> 

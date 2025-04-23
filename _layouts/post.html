@@ -7,8 +7,36 @@ layout: default
     <h1 class="post-title">{{ page.title }}</h1>
     <div class="post-meta">
       <span class="post-date">
-        <i class="far fa-calendar-alt"></i> {{ page.date | date: "%Y-%m-%d" }}
+        <i class="far fa-calendar-alt"></i> 작성일: {{ page.date | date: "%Y-%m-%d" }}
       </span>
+      
+      {% if page.work_start_date %}
+      <span class="post-work-date">
+        <i class="fas fa-tools"></i> 작업 시작: {{ page.work_start_date | date: "%Y-%m-%d" }}
+      </span>
+      {% endif %}
+      
+      {% if page.work_end_date %}
+      <span class="post-work-end-date">
+        <i class="fas fa-flag-checkered"></i> 작업 완료: {{ page.work_end_date | date: "%Y-%m-%d" }}
+        {% if page.work_start_date %}
+        <span class="work-duration">
+          {% assign start_seconds = page.work_start_date | date: '%s' | plus: 0 %}
+          {% assign end_seconds = page.work_end_date | date: '%s' | plus: 0 %}
+          {% assign duration_seconds = end_seconds | minus: start_seconds %}
+          {% assign duration_days = duration_seconds | divided_by: 86400 | plus: 1 %}
+          (총 {{ duration_days }}일)
+        </span>
+        {% endif %}
+      </span>
+      {% endif %}
+      
+      {% if page.work_hours %}
+      <span class="post-work-hours">
+        <i class="fas fa-clock"></i> 소요 시간: {{ page.work_hours }}시간
+      </span>
+      {% endif %}
+      
       {% if page.categories.size > 0 %}
       <span class="post-category">
         <i class="fas fa-folder"></i>
@@ -64,4 +92,7 @@ layout: default
       {% include giscus.html %}
     </div>
   {% endif %}
-</article> 
+</article>
+
+<!-- 이북 모드 스크립트 추가 -->
+<script src="{{ '/assets/js/ebook-mode.js' | relative_url }}"></script> 
