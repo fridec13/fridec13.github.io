@@ -1,0 +1,6 @@
+# robots.txt for https://fridec13.github.io/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://fridec13.github.io/sitemap.xml 

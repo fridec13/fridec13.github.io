@@ -10,6 +10,15 @@ future: true
 # 브라우저 캐시 무효화를 위한 빌드 버전
 build_version: "1.0.0"
 
+# SEO 관련 추가 설정
+lang: ko_KR
+logo: /assets/images/profile.jpg
+social:
+  name: 김성훈
+  links:
+    - https://github.com/fridec13
+    - https://twitter.com/USERNAME
+
 # 빌드 설정
 markdown: kramdown
 highlighter: rouge
@@ -49,12 +58,19 @@ defaults:
     values:
       layout: "post"
       comments: true
+      image: /assets/images/default-post-image.jpg
   - scope:
       path: ""
       type: "wiki"
     values:
       layout: "post"
       comments: true
+      image: /assets/images/default-wiki-image.jpg
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      image: /assets/images/default-page-image.jpg
 
 # 태그 설정
 tag_page_layout: tag_page
@@ -92,6 +108,8 @@ include:
   - assets/js/script.js
   - assets/css
   - assets/js
+  - robots.txt
+  - .htaccess
 
 # 제외 파일 및 디렉토리
 exclude:

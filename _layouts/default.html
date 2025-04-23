@@ -6,6 +6,31 @@
     <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
     <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
     
+    <!-- SEO 태그 추가 -->
+    {% seo %}
+    <meta name="author" content="{{ site.author }}">
+    <meta name="keywords" content="{% if page.tags %}{{ page.tags | join: ', ' }}{% else %}{{ site.title }}, {{ site.description }}{% endif %}">
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | absolute_url }}">
+    
+    <!-- Open Graph / 소셜 미디어 메타 태그 -->
+    <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+    <meta property="og:url" content="{{ page.url | replace:'index.html','' | absolute_url }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+    {% if page.image %}
+    <meta property="og:image" content="{{ page.image | absolute_url }}">
+    {% endif %}
+    
+    <!-- Twitter 카드 -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta name="twitter:description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+    {% if page.image %}
+    <meta name="twitter:image" content="{{ page.image | absolute_url }}">
+    {% endif %}
+    
     <!-- 파비콘 -->
     <link rel="apple-touch-icon" sizes="57x57" href="{{ '/favicon/icon/apple-icon-57x57.png' | relative_url }}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{ '/favicon/icon/apple-icon-60x60.png' | relative_url }}">
