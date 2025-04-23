@@ -62,7 +62,7 @@ work_hours: 24               # 총 작업 시간(시간 단위)
 2. 프로젝트 진행 기간 시각화
 3. 작업 히스토리 타임라인으로 정리
 
-![타임라인 이미지](https://via.placeholder.com/800x400?text=타임라인+이미지)
+![타임라인 이미지](/images/asdfasdf.png)
 
 ## 결론
 
