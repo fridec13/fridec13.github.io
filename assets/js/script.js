@@ -169,8 +169,18 @@ function initPanels() {
 
 // ── Go to panel (병풍 fold transition) ───────────────────────────────────────
 function goToPanel(nextIndex, animate = true) {
-  if (isPanelAnim || nextIndex === panelIndex) return;
   if (nextIndex < 0 || nextIndex >= projectKeys.length) return;
+
+  // Mobile: scroll to panel instead of animating
+  if (window.innerWidth <= 768) {
+    panelIndex = nextIndex;
+    updatePanelUI();
+    const panel = getPanels()[nextIndex];
+    if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  if (isPanelAnim || nextIndex === panelIndex) return;
 
   const panels  = getPanels();
   const leaving  = panels[panelIndex];
@@ -323,6 +333,27 @@ document.querySelectorAll('[data-page]').forEach(el => {
   });
 });
 
+// ── Theme toggle ─────────────────────────────────────────────────────────────
+function initTheme() {
+  const btn  = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+
+  function applyTheme(isLight) {
+    html.classList.toggle('light', isLight);
+    btn.textContent = isLight ? '☾' : '☀';
+    btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  btn.addEventListener('click', () => {
+    applyTheme(!html.classList.contains('light'));
+  });
+
+  // Restore saved preference
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') applyTheme(true);
+}
+
 // ── Snap-section scroll animations ───────────────────────────────────────────
 function setupSnapAnimations(pageEl) {
   const sections = pageEl.querySelectorAll('[data-snap-animate]');
@@ -357,6 +388,7 @@ function setupSnapAnimations(pageEl) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initPanels();
 
   const homePage  = document.getElementById('page-home');
