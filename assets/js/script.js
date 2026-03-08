@@ -345,6 +345,7 @@ function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
+  sidebar.style.overflow = 'hidden'; // required so GSAP height:0 actually clips content
   let visible  = true;
   let naturalH = 0; // captured lazily after Projects page is visible
 
@@ -409,7 +410,7 @@ function initTheme() {
 
   function applyTheme(isLight) {
     html.classList.toggle('light', isLight);
-    btn.textContent = isLight ? '☾' : '☀';
+    btn.textContent = isLight ? '☾\uFE0E' : '☀\uFE0E'; // \uFE0E forces text (monochrome) rendering on iOS
     btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 
