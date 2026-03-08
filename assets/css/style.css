@@ -703,8 +703,22 @@ nav { display: flex; gap: 2rem; align-items: center; }
     padding: 1rem 1rem 0.75rem;
   }
 
-  .project-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-  .project-item { border-left: none; border-bottom: 2px solid transparent; }
+  .project-list {
+    flex-direction: row;
+    flex-wrap: nowrap;       /* single row — no multi-line stacking */
+    overflow-x: auto;        /* scroll horizontally on narrow screens */
+    gap: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .project-list::-webkit-scrollbar { display: none; }
+
+  .project-item {
+    flex-shrink: 0;          /* don't shrink — keep readable size */
+    white-space: nowrap;     /* prevent text wrapping within item */
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
   .project-item.active { border-bottom-color: var(--accent); border-left-color: transparent; }
 
   /* Track wrapper fills remaining height → absolute panels work just like desktop */
