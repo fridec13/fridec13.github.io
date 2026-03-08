@@ -136,7 +136,7 @@ nav { display: flex; gap: 2rem; }
 /* ── Projects layout ───────────────────────────────────────── */
 .projects-layout {
   display: flex;
-  min-height: calc(100vh - var(--header-h));
+  height: calc(100vh - var(--header-h));
 }
 
 /* Sidebar */
@@ -145,10 +145,10 @@ nav { display: flex; gap: 2rem; }
   flex-shrink: 0;
   border-right: 1px solid var(--border);
   padding: 2.5rem 1.25rem;
-  position: sticky;
-  top: var(--header-h);
-  height: calc(100vh - var(--header-h));
+  height: 100%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-label {
@@ -187,18 +187,59 @@ nav { display: flex; gap: 2rem; }
   border-left-color: var(--accent);
 }
 
-/* Article area */
-.project-article {
+/* ── Panel track ───────────────────────────────────────────── */
+.projects-track-wrapper {
   flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#projects-track {
+  position: relative;
+  height: 100%;
+}
+
+/* Individual panels – stacked, one visible at a time */
+.project-panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   justify-content: center;
-  overflow-y: auto;
+  align-items: flex-start;
+  will-change: transform, opacity;
 }
 
 .article-inner {
   width: 100%;
   max-width: 720px;
   padding: 3.5rem 2rem;
+}
+
+/* ── Panel dots ────────────────────────────────────────────── */
+.panel-dots {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 0 0.75rem;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.panel-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background var(--ease), transform var(--ease);
+}
+.panel-dot.active {
+  background: var(--accent);
+  transform: scale(1.5);
 }
 
 /* ── Article image ─────────────────────────────────────────── */
@@ -365,23 +406,37 @@ nav { display: flex; gap: 2rem; }
 
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .projects-layout { flex-direction: column; }
+  .projects-layout {
+    flex-direction: column;
+    height: auto;
+  }
 
   .projects-sidebar {
     width: 100%;
     height: auto;
-    position: static;
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding: 1.5rem 1rem;
   }
 
   .project-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-
   .project-item { border-left: none; border-bottom: 2px solid transparent; }
   .project-item.active { border-bottom-color: var(--accent); border-left-color: transparent; }
 
-  .project-article { padding: 2rem 1.25rem; max-width: 100%; }
+  /* On mobile: panels stack vertically, all visible */
+  .projects-track-wrapper { overflow: visible; height: auto; }
+  #projects-track         { position: static; height: auto; }
+  .project-panel {
+    position: static !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    height: auto;
+    overflow: visible;
+  }
 
+  .panel-dots { display: none; }
+
+  .article-inner { padding: 2rem 1.25rem; }
   .article-title { font-size: 1.5rem; }
 }

@@ -70,7 +70,7 @@ const projects = {
       <ul>
         <li>GSAP Timeline을 활용한 페이지 전환 애니메이션</li>
         <li>헤더 네비게이션 기반 뷰 전환 (SPA 구조)</li>
-        <li>프로젝트 사이드바 + 아티클 레이아웃</li>
+        <li>프로젝트 사이드바 + 가로 패널 전환</li>
         <li>GitHub Pages 정적 배포</li>
         <li>모바일 반응형 레이아웃</li>
       </ul>
@@ -83,11 +83,13 @@ const projects = {
   },
 };
 
-// ── State ────────────────────────────────────────────────────────────────────
-let currentPage    = 'home';
-let currentProject = 'project1';
+// ── Global State ─────────────────────────────────────────────────────────────
+const projectKeys  = Object.keys(projects);
+let   currentPage  = 'home';
+let   panelIndex   = 0;
+let   isPanelAnim  = false;
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Article HTML builder ──────────────────────────────────────────────────────
 function buildArticleHTML(id) {
   const p = projects[id];
   if (!p) return '';
@@ -96,7 +98,6 @@ function buildArticleHTML(id) {
   const links = p.links.map(l =>
     `<a class="article-link" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`
   ).join('');
-
   const imageHTML = p.image
     ? `<div class="article-image"><img src="${p.image}" alt="${p.title}" loading="lazy" /></div>`
     : '';
@@ -117,30 +118,147 @@ function buildArticleHTML(id) {
   `;
 }
 
-// ── Article render ───────────────────────────────────────────────────────────
-function renderArticle(id, animate = true) {
-  const articleEl = document.querySelector('.project-article');
-  articleEl.innerHTML = buildArticleHTML(id);
-  currentProject = id;
+// ── Panel helpers ─────────────────────────────────────────────────────────────
+function getPanels() {
+  return Array.from(document.querySelectorAll('.project-panel'));
+}
 
-  if (!animate) return;
-
-  const inner = articleEl.querySelector('.article-inner');
-  const els = [
-    '.article-header',
-    '.article-image',
-    '.article-overview',
-    '.article-body',
-    '.article-links',
-  ].map(s => inner?.querySelector(s)).filter(Boolean);
-
-  gsap.fromTo(els,
-    { opacity: 0, y: 24 },
-    { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.08 }
+function updatePanelUI() {
+  document.querySelectorAll('.project-item').forEach((el, i) =>
+    el.classList.toggle('active', i === panelIndex)
+  );
+  document.querySelectorAll('.panel-dot').forEach((el, i) =>
+    el.classList.toggle('active', i === panelIndex)
   );
 }
 
-// ── Page transition ──────────────────────────────────────────────────────────
+// ── Init panels (called once on DOMContentLoaded) ─────────────────────────────
+function initPanels() {
+  const track  = document.getElementById('projects-track');
+  const dotsEl = document.getElementById('panel-dots');
+
+  projectKeys.forEach((id, i) => {
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = 'project-panel';
+    panel.dataset.project = id;
+    panel.innerHTML = buildArticleHTML(id);
+    track.appendChild(panel);
+
+    // Hide panels except first
+    if (i > 0) {
+      gsap.set(panel, { xPercent: 100, opacity: 0, pointerEvents: 'none' });
+    } else {
+      panel.style.pointerEvents = 'auto';
+    }
+
+    // Dot
+    const dot = document.createElement('span');
+    dot.className = 'panel-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goToPanel(i));
+    dotsEl.appendChild(dot);
+  });
+
+  // Sidebar items → jump to panel
+  document.querySelectorAll('.project-item').forEach((item, i) => {
+    item.addEventListener('click', () => goToPanel(i));
+  });
+
+  setupPanelScroll();
+}
+
+// ── Go to panel (병풍 fold transition) ───────────────────────────────────────
+function goToPanel(nextIndex, animate = true) {
+  if (isPanelAnim || nextIndex === panelIndex) return;
+  if (nextIndex < 0 || nextIndex >= projectKeys.length) return;
+
+  const panels  = getPanels();
+  const leaving  = panels[panelIndex];
+  const entering = panels[nextIndex];
+  const dir      = nextIndex > panelIndex ? 1 : -1;  // +1 = forward, -1 = back
+
+  isPanelAnim = true;
+  entering.scrollTop = 0;
+
+  // Stage the entering panel off-screen
+  gsap.set(entering, { xPercent: dir * 105, skewX: dir * 4, opacity: 0 });
+  entering.style.pointerEvents = 'none';
+
+  const tl = gsap.timeline({
+    onComplete() {
+      gsap.set(leaving, { opacity: 0, xPercent: 0, skewX: 0 });
+      leaving.style.pointerEvents  = 'none';
+      entering.style.pointerEvents = 'auto';
+      panelIndex  = nextIndex;
+      isPanelAnim = false;
+      updatePanelUI();
+    },
+  });
+
+  // Leaving panel: fold/slide away
+  tl.to(leaving, {
+    xPercent: dir * -105,
+    skewX:    dir * -4,
+    opacity:  0,
+    duration: 0.45,
+    ease:     'power3.in',
+  });
+
+  // Entering panel: unfold from the side
+  tl.to(entering, {
+    xPercent: 0,
+    skewX:    0,
+    opacity:  1,
+    duration: 0.5,
+    ease:     'power3.out',
+  }, '-=0.18');
+
+  // Article content stagger
+  const contentEls = [
+    '.article-header', '.article-image',
+    '.article-overview', '.article-body', '.article-links',
+  ].map(s => entering.querySelector(s)).filter(Boolean);
+
+  if (contentEls.length) {
+    tl.fromTo(contentEls,
+      { y: 22, opacity: 0 },
+      { y: 0,  opacity: 1, duration: 0.38, stagger: 0.06, ease: 'power3.out' },
+      '-=0.25'
+    );
+  }
+}
+
+// ── Wheel → panel scroll (desktop) ───────────────────────────────────────────
+function setupPanelScroll() {
+  const wrapper = document.querySelector('.projects-track-wrapper');
+
+  wrapper.addEventListener('wheel', (e) => {
+    if (window.innerWidth <= 768 || isPanelAnim) return;
+
+    const panel                             = getPanels()[panelIndex];
+    const { scrollTop, scrollHeight, clientHeight } = panel;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 2;
+    const atTop    = scrollTop <= 0;
+
+    // Edge of panel → switch panel; otherwise let it scroll naturally
+    if (e.deltaY > 0 && atBottom) {
+      e.preventDefault();
+      goToPanel(panelIndex + 1);
+    } else if (e.deltaY < 0 && atTop) {
+      e.preventDefault();
+      goToPanel(panelIndex - 1);
+    }
+  }, { passive: false });
+
+  // Keyboard support
+  window.addEventListener('keydown', (e) => {
+    if (currentPage !== 'projects') return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToPanel(panelIndex + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goToPanel(panelIndex - 1);
+  });
+}
+
+// ── Page transition ───────────────────────────────────────────────────────────
 function navigateTo(pageId) {
   if (pageId === currentPage) return;
 
@@ -165,15 +283,24 @@ function navigateTo(pageId) {
 
   tl.to(toEl, { opacity: 1, y: 0, duration: 0.38, ease: 'power3.out' });
 
-  // Sidebar stagger on projects
   if (pageId === 'projects') {
     tl.from('.project-item',
       { x: -16, opacity: 0, duration: 0.35, stagger: 0.07, ease: 'power2.out' },
       '-=0.2'
     );
+    // Animate current panel content when re-entering
+    tl.call(() => {
+      const panel = getPanels()[panelIndex];
+      if (!panel) return;
+      const els = ['.article-header', '.article-image', '.article-overview', '.article-body', '.article-links']
+        .map(s => panel.querySelector(s)).filter(Boolean);
+      if (els.length) gsap.fromTo(els,
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.35, stagger: 0.05, ease: 'power3.out' }
+      );
+    });
   }
 
-  // About stagger
   if (pageId === 'about') {
     tl.from(['.about-title', '.about-content p', '.skill-tag'],
       { y: 20, opacity: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out' },
@@ -181,52 +308,30 @@ function navigateTo(pageId) {
     );
   }
 
-  // Update nav active state
   document.querySelectorAll('.nav-link').forEach(link => {
     link.classList.toggle('active', link.dataset.page === pageId);
   });
 }
 
-// ── Event listeners ──────────────────────────────────────────────────────────
-
-// Header nav + logo
+// ── Header / logo nav ─────────────────────────────────────────────────────────
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', e => {
     e.preventDefault();
-    const page = el.dataset.page;
-    navigateTo(page);
-
-    // Render first project when entering projects page
-    if (page === 'projects') {
-      renderArticle(currentProject);
-    }
+    navigateTo(el.dataset.page);
   });
 });
 
-// Sidebar items
-document.querySelectorAll('.project-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.project-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    renderArticle(item.dataset.project);
-  });
-});
-
-// ── Init ─────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // Pre-populate article while projects page is still hidden
-  renderArticle('project1', false);
+  initPanels();
 
-  // Show home page (opacity handled entirely by GSAP, not CSS)
   const homePage = document.getElementById('page-home');
   homePage.style.display = 'block';
   homePage.classList.add('active');
 
-  // Single timeline: header → hero elements in sequence
   const tl = gsap.timeline();
-
-  tl.from('#header',      { y: -60, opacity: 0, duration: 0.6, ease: 'power3.out' })
-    .from('.hero-label',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.1')
-    .from('.hero-name',   { y: 50,  opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.4')
-    .from('.hero-desc',   { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4');
+  tl.from('#header',     { y: -60, opacity: 0, duration: 0.6, ease: 'power3.out' })
+    .from('.hero-label', { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.1')
+    .from('.hero-name',  { y: 50,  opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.4')
+    .from('.hero-desc',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4');
 });
