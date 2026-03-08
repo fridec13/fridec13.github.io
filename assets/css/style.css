@@ -697,18 +697,9 @@ nav { display: flex; gap: 2rem; align-items: center; }
   .projects-sidebar {
     width: 100%;
     flex-shrink: 0;
+    height: auto;
     border-right: none;
     border-bottom: 1px solid var(--border);
-    /* Grid trick: collapse to 0fr smoothly without knowing exact height */
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 0.32s ease;
-  }
-  .projects-sidebar.collapsed { grid-template-rows: 0fr; }
-
-  /* Inner wrapper: overflow:hidden is what clips content during collapse */
-  .sidebar-inner {
-    overflow: hidden;
     padding: 1rem 1rem 0.75rem;
   }
 
