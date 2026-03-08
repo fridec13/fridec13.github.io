@@ -341,16 +341,12 @@ function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
-
-  // Lock in exact pixel height so CSS transition has a concrete start/end value
-  const naturalH = sidebar.scrollHeight;
-  sidebar.style.height     = naturalH + 'px';
   sidebar.style.overflow   = 'hidden';
-  // Hand off to CSS transition — more reliable than GSAP height on iOS Safari
   sidebar.style.transition =
     'height 0.3s ease, padding-top 0.3s ease, padding-bottom 0.3s ease';
 
-  let visible = true;
+  let visible  = true;
+  let naturalH = 0; // captured lazily once the page is actually visible
 
   function showSidebar() {
     if (visible) return;
@@ -362,6 +358,16 @@ function setupMobileSidebarScroll() {
 
   function hideSidebar() {
     if (!visible) return;
+
+    // Capture real height on the first call (projects page is visible by now)
+    if (!naturalH) {
+      naturalH = sidebar.scrollHeight;
+      // Pin the explicit px value so the browser has a concrete start point
+      sidebar.style.height = naturalH + 'px';
+      // Force reflow so the browser registers the px height before we set 0
+      void sidebar.offsetHeight;
+    }
+
     visible = false;
     sidebar.style.height        = '0px';
     sidebar.style.paddingTop    = '0';
