@@ -560,6 +560,32 @@ nav { display: flex; gap: 2rem; align-items: center; }
   color: var(--text-1);
 }
 
+/* ── Body images ───────────────────────────────────────────── */
+.article-body img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 1.4rem 0;
+  object-fit: cover;
+}
+
+.article-body figure {
+  margin: 1.6rem 0;
+}
+
+.article-body figure img {
+  margin: 0;
+}
+
+.article-body figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-2);
+  text-align: center;
+  line-height: 1.5;
+}
+
 /* ── Code blocks ───────────────────────────────────────────── */
 .article-body pre {
   margin: 1.4rem 0;
