@@ -180,6 +180,16 @@ function goToPanel(nextIndex, animate = true) {
       panelIndex  = nextIndex;
       isPanelAnim = false;
       updatePanelUI();
+
+      // Render mermaid diagrams in this panel now that it has real dimensions
+      if (window.mermaid) {
+        const nodes = Array.from(entering.querySelectorAll('.mermaid:not([data-processed])'));
+        if (nodes.length) {
+          nodes.forEach(el => el.setAttribute('data-mermaid-src', el.innerHTML.trim()));
+          mermaid.run({ nodes });
+          mermaidReady = true;
+        }
+      }
     },
   });
 
@@ -289,9 +299,16 @@ function navigateTo(pageId) {
         { y: 0, opacity: 1, duration: 0.35, stagger: 0.05, ease: 'power3.out' }
       );
 
-      // First visit: run mermaid now that the page is visible and has real dimensions
+      // First visit: render mermaid only in the currently visible panel (panel 0)
       if (window.mermaid && !mermaidReady) {
-        mermaid.run();
+        const firstPanel = getPanels()[0];
+        const nodes = firstPanel
+          ? Array.from(firstPanel.querySelectorAll('.mermaid:not([data-processed])'))
+          : [];
+        if (nodes.length) {
+          nodes.forEach(el => el.setAttribute('data-mermaid-src', el.innerHTML.trim()));
+          mermaid.run({ nodes });
+        }
         mermaidReady = true;
       }
     });
