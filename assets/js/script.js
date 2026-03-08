@@ -56,6 +56,7 @@ const projectKeys  = Object.keys(projects).filter(k => k.startsWith('project'));
 let   currentPage  = 'home';
 let   panelIndex   = 0;
 let   isPanelAnim  = false;
+let   mermaidReady = false; // true after first successful mermaid.run()
 
 // ── Article shell builder (body content loaded separately via fetch) ──────────
 function buildArticleShell(id) {
@@ -287,6 +288,12 @@ function navigateTo(pageId) {
         { y: 16, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.35, stagger: 0.05, ease: 'power3.out' }
       );
+
+      // First visit: run mermaid now that the page is visible and has real dimensions
+      if (window.mermaid && !mermaidReady) {
+        mermaid.run();
+        mermaidReady = true;
+      }
     });
   }
 
@@ -323,8 +330,8 @@ function initTheme() {
     btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 
-    // Re-render mermaid diagrams with matching theme
-    if (window.mermaid) {
+    // Re-render already-processed mermaid diagrams with the new theme
+    if (window.mermaid && mermaidReady) {
       mermaid.initialize({ startOnLoad: false, theme: isLight ? 'default' : 'dark' });
       document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
         const src = el.getAttribute('data-mermaid-src');
@@ -425,14 +432,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   initTheme();
 
-  // Wait for all article HTML files to load before running mermaid/hljs
+  // Wait for all article HTML files to load
   await initPanels();
 
+  // Save mermaid source text now, but DO NOT call mermaid.run() yet —
+  // #page-projects is still display:none, and mermaid needs visible dimensions.
+  // Actual rendering happens in navigateTo() when the page becomes visible.
   if (window.mermaid) {
     document.querySelectorAll('.mermaid').forEach(el => {
       el.setAttribute('data-mermaid-src', el.innerHTML.trim());
     });
-    mermaid.run();
   }
 
   const homePage  = document.getElementById('page-home');
