@@ -702,7 +702,6 @@ nav { display: flex; gap: 2rem; align-items: center; }
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding: 1rem 1rem 0.75rem;
-    overflow: hidden; /* needed for GSAP height collapse */
   }
 
   .project-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }

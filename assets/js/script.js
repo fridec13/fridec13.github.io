@@ -340,30 +340,35 @@ function navigateTo(pageId) {
 function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
-  const sidebar  = document.querySelector('.projects-sidebar');
-  const sidebarH = sidebar.offsetHeight;
-  let   visible  = true;
+  const sidebar = document.querySelector('.projects-sidebar');
+
+  // Lock in exact pixel height so CSS transition has a concrete start/end value
+  const naturalH = sidebar.scrollHeight;
+  sidebar.style.height     = naturalH + 'px';
+  sidebar.style.overflow   = 'hidden';
+  // Hand off to CSS transition — more reliable than GSAP height on iOS Safari
+  sidebar.style.transition =
+    'height 0.3s ease, padding-top 0.3s ease, padding-bottom 0.3s ease';
+
+  let visible = true;
 
   function showSidebar() {
     if (visible) return;
     visible = true;
-    gsap.to(sidebar, {
-      height: sidebarH, paddingTop: '1rem', paddingBottom: '0.75rem',
-      duration: 0.28, ease: 'power2.out',
-    });
+    sidebar.style.height        = naturalH + 'px';
+    sidebar.style.paddingTop    = '1rem';
+    sidebar.style.paddingBottom = '0.75rem';
   }
 
   function hideSidebar() {
     if (!visible) return;
     visible = false;
-    gsap.to(sidebar, {
-      height: 0, paddingTop: 0, paddingBottom: 0,
-      duration: 0.22, ease: 'power2.in',
-    });
+    sidebar.style.height        = '0px';
+    sidebar.style.paddingTop    = '0';
+    sidebar.style.paddingBottom = '0';
   }
 
   function onScroll() {
-    // Show only when at the very top, hide as soon as scrolled away
     if (this.scrollTop <= 4) showSidebar();
     else                     hideSidebar();
   }
@@ -372,7 +377,6 @@ function setupMobileSidebarScroll() {
     panel.addEventListener('scroll', onScroll, { passive: true })
   );
 
-  // Expose so goToPanel can restore sidebar on panel switch
   sidebar._showSidebar = showSidebar;
 }
 
