@@ -145,11 +145,8 @@ function initPanels() {
     panel.innerHTML = buildArticleHTML(id);
     track.appendChild(panel);
 
-    // Desktop: hide panels except first via GSAP
-    // Mobile: first panel gets .mobile-active, others stay hidden (CSS handles it)
     if (i === 0) {
       panel.style.pointerEvents = 'auto';
-      panel.classList.add('mobile-active');
     } else {
       gsap.set(panel, { xPercent: 100, opacity: 0, pointerEvents: 'none' });
     }
@@ -172,14 +169,6 @@ function initPanels() {
 // ── Go to panel (병풍 fold transition) ───────────────────────────────────────
 function goToPanel(nextIndex, animate = true) {
   if (nextIndex < 0 || nextIndex >= projectKeys.length) return;
-
-  // Mobile: tab-switch (show only selected panel, sidebar stays visible)
-  if (window.innerWidth <= 768) {
-    getPanels().forEach((p, i) => p.classList.toggle('mobile-active', i === nextIndex));
-    panelIndex = nextIndex;
-    updatePanelUI();
-    return;
-  }
 
   if (isPanelAnim || nextIndex === panelIndex) return;
 

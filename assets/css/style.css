@@ -609,19 +609,16 @@ nav { display: flex; gap: 2rem; align-items: center; }
   .focus-cards { grid-template-columns: 1fr; }
   .exp-item { gap: 1.25rem; }
   .scroll-hint { display: none; }
+  /* Column layout, full viewport height so absolute panels still work */
   .projects-layout {
     flex-direction: column;
-    height: auto;
+    height: calc(100svh - var(--header-h));
   }
 
-  /* Sidebar stays at top while panel content scrolls */
   .projects-sidebar {
     width: 100%;
+    flex-shrink: 0;
     height: auto;
-    position: sticky;
-    top: var(--header-h);
-    z-index: 10;
-    background: var(--bg);
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding: 1rem 1rem 0.75rem;
@@ -631,21 +628,13 @@ nav { display: flex; gap: 2rem; align-items: center; }
   .project-item { border-left: none; border-bottom: 2px solid transparent; }
   .project-item.active { border-bottom-color: var(--accent); border-left-color: transparent; }
 
-  /* On mobile: only the active panel is shown (tab behavior) */
-  .projects-track-wrapper { overflow: visible; height: auto; }
-  #projects-track         { position: static; height: auto; }
-  .project-panel {
-    position: static !important;
-    transform: none !important;
-    height: auto;
-    overflow: visible;
-    display: none;       /* hidden by default */
-    opacity: 1 !important;
-    pointer-events: auto !important;
+  /* Track wrapper fills remaining height → absolute panels work just like desktop */
+  .projects-track-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
-  .project-panel.mobile-active {
-    display: block !important;
-  }
+  #projects-track { position: relative; height: 100%; }
 
   .panel-dots { display: none; }
 
