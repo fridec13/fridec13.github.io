@@ -685,6 +685,7 @@ nav { display: flex; gap: 2rem; align-items: center; }
     overflow-y: visible;
   }
   .snap-section { min-height: auto; padding: 4rem 1.25rem; }
+  .header-inner { padding: 0 1rem; }
   .hero { min-height: 100svh; }
   .focus-cards { grid-template-columns: 1fr; }
   .exp-item { gap: 1.25rem; }

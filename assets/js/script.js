@@ -336,54 +336,10 @@ function navigateTo(pageId) {
   document.querySelector('.logo').classList.toggle('active', pageId === 'home');
 }
 
-// ── Mobile sidebar: visible at top, hidden once scrolled down ────────────────
+// ── Mobile sidebar (placeholder — collapse behaviour removed for stability) ───
 function setupMobileSidebarScroll() {
-  if (window.innerWidth > 768) return;
-
-  const sidebar = document.querySelector('.projects-sidebar');
-  sidebar.style.overflow   = 'hidden';
-  sidebar.style.transition =
-    'height 0.3s ease, padding-top 0.3s ease, padding-bottom 0.3s ease';
-
-  let visible  = true;
-  let naturalH = 0; // captured lazily once the page is actually visible
-
-  function showSidebar() {
-    if (visible) return;
-    visible = true;
-    sidebar.style.height        = naturalH + 'px';
-    sidebar.style.paddingTop    = '1rem';
-    sidebar.style.paddingBottom = '0.75rem';
-  }
-
-  function hideSidebar() {
-    if (!visible) return;
-
-    // Capture real height on the first call (projects page is visible by now)
-    if (!naturalH) {
-      naturalH = sidebar.scrollHeight;
-      // Pin the explicit px value so the browser has a concrete start point
-      sidebar.style.height = naturalH + 'px';
-      // Force reflow so the browser registers the px height before we set 0
-      void sidebar.offsetHeight;
-    }
-
-    visible = false;
-    sidebar.style.height        = '0px';
-    sidebar.style.paddingTop    = '0';
-    sidebar.style.paddingBottom = '0';
-  }
-
-  function onScroll() {
-    if (this.scrollTop <= 4) showSidebar();
-    else                     hideSidebar();
-  }
-
-  getPanels().forEach(panel =>
-    panel.addEventListener('scroll', onScroll, { passive: true })
-  );
-
-  sidebar._showSidebar = showSidebar;
+  // Sidebar stays always visible on mobile for now.
+  // goToPanel still calls sidebar._showSidebar if present; no-op here.
 }
 
 // ── Header / logo nav ─────────────────────────────────────────────────────────
