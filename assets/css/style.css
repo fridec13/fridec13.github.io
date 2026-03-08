@@ -133,12 +133,11 @@ nav { display: flex; gap: 2rem; align-items: center; }
 }
 .page.active { display: block; }
 
-/* Home & About: internal scroll container with fullscreen snap */
+/* Home & About: internal scroll container (GSAP controls snapping) */
 #page-home,
 #page-about {
   height: calc(100vh - var(--header-h));
   overflow-y: auto;
-  scroll-snap-type: y mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -147,7 +146,6 @@ nav { display: flex; gap: 2rem; align-items: center; }
 
 /* Every fullscreen snap unit */
 .snap-section {
-  scroll-snap-align: start;
   min-height: calc(100vh - var(--header-h));
 }
 
@@ -551,6 +549,76 @@ nav { display: flex; gap: 2rem; align-items: center; }
   color: var(--text-1);
 }
 
+/* ── Code blocks ───────────────────────────────────────────── */
+.article-body pre {
+  margin: 1.4rem 0;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  border: 1px solid var(--border);
+}
+
+/* override hljs background to match theme border */
+.article-body pre code.hljs { border-radius: 8px; }
+
+.article-body :not(pre) > code {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.15em 0.45em;
+  font-size: 0.85em;
+  font-family: 'D2Coding', 'Consolas', 'Menlo', monospace;
+  color: var(--accent);
+}
+
+/* ── Tables ────────────────────────────────────────────────── */
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.4rem 0;
+  font-size: 0.875rem;
+}
+
+.article-body th,
+.article-body td {
+  padding: 0.65rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-body th {
+  font-weight: 600;
+  color: var(--text-1);
+  background: var(--bg-surface);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.article-body td { color: var(--text-2); }
+
+.article-body tr:last-child td { border-bottom: none; }
+
+.article-body table {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ── Mermaid charts ────────────────────────────────────────── */
+.article-body .mermaid {
+  margin: 1.4rem 0;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.article-body .mermaid svg { max-width: 100%; height: auto; }
+
 /* ── About ─────────────────────────────────────────────────── */
 .about-layout {
   display: flex;
@@ -602,9 +670,8 @@ nav { display: flex; gap: 2rem; align-items: center; }
   #page-home, #page-about {
     height: auto;
     overflow-y: visible;
-    scroll-snap-type: none;
   }
-  .snap-section { min-height: auto; scroll-snap-align: none; padding: 4rem 1.25rem; }
+  .snap-section { min-height: auto; padding: 4rem 1.25rem; }
   .hero { min-height: 100svh; }
   .focus-cards { grid-template-columns: 1fr; }
   .exp-item { gap: 1.25rem; }

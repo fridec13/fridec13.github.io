@@ -81,10 +81,73 @@ const projects = {
       { label: 'GitHub', href: 'https://github.com/fridec13/fridec13.github.io' },
     ],
   },
+
+  project4: {
+    title: 'Demo Article',
+    date: '2026.03',
+    tags: ['Test', 'Code', 'Table', 'Mermaid'],
+    image: 'https://picsum.photos/seed/demodoc/900/506',
+    overview:
+      '코드 블록, 테이블, Mermaid 차트 렌더링을 확인하기 위한 테스트 아티클입니다.',
+    content: `
+      <h3>파이썬 코드 예시</h3>
+      <pre><code class="language-python">import torch
+import torch.nn as nn
+
+class PolicyNet(nn.Module):
+    def __init__(self, obs_dim, act_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, 256),
+            nn.ReLU(),
+            nn.Linear(256, act_dim),
+        )
+
+    def forward(self, obs):
+        return self.net(obs)
+
+model = PolicyNet(obs_dim=64, act_dim=7)
+n_params = sum(p.numel() for p in model.parameters())
+print("Parameters:", n_params)
+</code></pre>
+
+      <h3>모델 성능 비교</h3>
+      <table>
+        <thead>
+          <tr><th>모델</th><th>성공률</th><th>추론 시간</th><th>메모리</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ACT</td><td>92.4 %</td><td>12 ms</td><td>3.8 GB</td></tr>
+          <tr><td>Diffusion Policy</td><td>95.1 %</td><td>140 ms</td><td>7.2 GB</td></tr>
+          <tr><td>BC (baseline)</td><td>84.7 %</td><td>4 ms</td><td>1.2 GB</td></tr>
+        </tbody>
+      </table>
+
+      <h3>학습 파이프라인</h3>
+      <div class="mermaid">
+graph LR
+  A[환경 관측] --> B[정책 네트워크]
+  B --> C[행동 출력]
+  C --> D[환경 실행]
+  D -->|done=False| A
+  D -->|done=True| E[에피소드 종료]
+  E --> F[보상 집계]
+  F --> G[정책 업데이트]
+  G --> A
+      </div>
+
+      <h3>인라인 코드</h3>
+      <p>학습 시 <code>batch_size=256</code> 과 <code>lr=3e-4</code> 를 사용했습니다.</p>
+    `,
+    links: [
+      { label: 'GitHub', href: 'https://github.com/fridec13' },
+    ],
+  },
+
 };
 
 // ── Global State ─────────────────────────────────────────────────────────────
-const projectKeys  = Object.keys(projects);
+const projectKeys  = Object.keys(projects).filter(k => k.startsWith('project'));
 let   currentPage  = 'home';
 let   panelIndex   = 0;
 let   isPanelAnim  = false;
@@ -143,6 +206,9 @@ function initPanels() {
     panel.className = 'project-panel';
     panel.dataset.project = id;
     panel.innerHTML = buildArticleHTML(id);
+    if (window.hljs) {
+      panel.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+    }
     track.appendChild(panel);
 
     if (i === 0) {
@@ -278,6 +344,8 @@ function navigateTo(pageId) {
   tl.call(() => {
     toEl.style.display = 'block';
     toEl.classList.add('active');
+    toEl.scrollTop = 0;
+    if (toEl._snap) toEl._snap.current = 0;
     gsap.set(toEl, { opacity: 0, y: 20 });
   });
 
@@ -333,6 +401,19 @@ function initTheme() {
     btn.textContent = isLight ? '☾' : '☀';
     btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
+
+    // Re-render mermaid diagrams with matching theme
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: false, theme: isLight ? 'default' : 'dark' });
+      document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
+        const src = el.getAttribute('data-mermaid-src');
+        if (src) {
+          el.removeAttribute('data-processed');
+          el.innerHTML = src;
+        }
+      });
+      mermaid.run();
+    }
   }
 
   btn.addEventListener('click', () => {
@@ -344,42 +425,97 @@ function initTheme() {
   if (saved === 'light') applyTheme(true);
 }
 
-// ── Snap-section scroll animations ───────────────────────────────────────────
+// ── GSAP-controlled snap scroll + section enter animations ───────────────────
 function setupSnapAnimations(pageEl) {
-  const sections = pageEl.querySelectorAll('[data-snap-animate]');
-  if (!sections.length) return;
+  const allSections  = Array.from(pageEl.querySelectorAll('.snap-section'));
+  const animSections = Array.from(pageEl.querySelectorAll('[data-snap-animate]'));
+  if (!allSections.length) return;
+
+  // Per-page snap state stored on the element
+  pageEl._snap = { current: 0, busy: false };
+
+  function snapTo(index) {
+    const state = pageEl._snap;
+    if (state.busy || index === state.current) return;
+    if (index < 0 || index >= allSections.length) return;
+
+    state.busy = true;
+    const target    = allSections[index];
+    const targetTop = target.getBoundingClientRect().top
+                    + pageEl.scrollTop
+                    - pageEl.getBoundingClientRect().top;
+
+    gsap.to(pageEl, {
+      scrollTop: targetTop,
+      duration:  1.1,
+      ease:      'power3.inOut',
+      onComplete() {
+        state.current = index;
+        state.busy    = false;
+      },
+    });
+  }
+
+  // Wheel → snap (desktop only; mobile scrolls normally)
+  pageEl.addEventListener('wheel', e => {
+    if (window.innerWidth <= 768) return;
+    e.preventDefault();
+    snapTo(pageEl._snap.current + (e.deltaY > 0 ? 1 : -1));
+  }, { passive: false });
+
+  // Touch swipe
+  let touchY = 0;
+  pageEl.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; },
+    { passive: true });
+  pageEl.addEventListener('touchend', e => {
+    const dy = touchY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 40) snapTo(pageEl._snap.current + (dy > 0 ? 1 : -1));
+  }, { passive: true });
+
+  // IntersectionObserver for content animations
+  if (!animSections.length) return;
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const targets = entry.target.querySelectorAll('.animate-in');
       if (entry.isIntersecting) {
-        // Animate elements in with stagger
         gsap.fromTo(targets,
-          { y: 60, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: 'power3.out',
-            clearProps: 'transform' }
+          { y: 70, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.0, stagger: 0.13, ease: 'power3.out' }
         );
       } else {
-        // Reset so animation replays on re-entry
-        gsap.set(targets, { y: 60, opacity: 0 });
+        gsap.set(targets, { y: 70, opacity: 0 });
       }
     });
-  }, {
-    root: window.innerWidth <= 768 ? null : pageEl,
-    threshold: 0.3,
-  });
+  }, { root: pageEl, threshold: 0.35 });
 
-  sections.forEach(s => {
-    // Set initial hidden state
-    gsap.set(s.querySelectorAll('.animate-in'), { y: 60, opacity: 0 });
+  animSections.forEach(s => {
+    gsap.set(s.querySelectorAll('.animate-in'), { y: 70, opacity: 0 });
     observer.observe(s);
   });
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  // Mermaid: init before panels so diagrams render on first paint
+  if (window.mermaid) {
+    const isDark = !document.documentElement.classList.contains('light');
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: isDark ? 'dark' : 'default',
+    });
+  }
+
   initTheme();
   initPanels();
+
+  // Save original mermaid source before processing, then run
+  if (window.mermaid) {
+    document.querySelectorAll('.mermaid').forEach(el => {
+      el.setAttribute('data-mermaid-src', el.innerHTML.trim());
+    });
+    mermaid.run();
+  }
 
   const homePage  = document.getElementById('page-home');
   const aboutPage = document.getElementById('page-about');
