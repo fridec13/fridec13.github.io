@@ -304,10 +304,6 @@ function navigateTo(pageId) {
         { y: 0, opacity: 1, duration: 0.35, stagger: 0.05, ease: 'power3.out' }
       );
 
-      // Prime sidebar height now that the page is visible (scrollHeight works)
-      const sidebarEl = document.querySelector('.projects-sidebar');
-      if (sidebarEl && sidebarEl._initHeight) sidebarEl._initHeight();
-
       // First visit: render mermaid only in the currently visible panel (panel 0)
       if (window.mermaid && !mermaidReady) {
         const firstPanel = getPanels()[0];
@@ -340,45 +336,23 @@ function navigateTo(pageId) {
   document.querySelector('.logo').classList.toggle('active', pageId === 'home');
 }
 
-// ── Mobile sidebar: collapse on scroll, reveal at top ────────────────────────
+// ── Mobile sidebar: collapse on scroll, reveal at top (CSS grid transition) ──
 function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
-  sidebar.style.overflow = 'hidden'; // required so GSAP height:0 actually clips content
-  let visible  = true;
-  let naturalH = 0; // captured lazily after Projects page is visible
-
-  function initHeight() {
-    if (naturalH) return;
-    naturalH = sidebar.scrollHeight; // reliable once page is display:block
-  }
+  let visible = true;
 
   function showSidebar() {
     if (visible) return;
     visible = true;
-    gsap.to(sidebar, {
-      height: naturalH,
-      paddingTop: 16,    // 1rem
-      paddingBottom: 12, // 0.75rem
-      duration: 0.35,
-      ease: 'power3.out',
-      overwrite: 'auto',
-    });
+    sidebar.classList.remove('collapsed');
   }
 
   function hideSidebar() {
-    initHeight(); // safe to call here — projects page is visible
     if (!visible) return;
     visible = false;
-    gsap.to(sidebar, {
-      height: 0,
-      paddingTop: 0,
-      paddingBottom: 0,
-      duration: 0.28,
-      ease: 'power2.in',
-      overwrite: 'auto',
-    });
+    sidebar.classList.add('collapsed');
   }
 
   function onScroll() {
@@ -390,8 +364,6 @@ function setupMobileSidebarScroll() {
     panel.addEventListener('scroll', onScroll, { passive: true })
   );
 
-  // Exposed so navigateTo can prime naturalH right after page becomes visible
-  sidebar._initHeight  = initHeight;
   sidebar._showSidebar = showSidebar;
 }
 
