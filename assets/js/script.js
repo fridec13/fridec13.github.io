@@ -465,22 +465,25 @@ function setupSnapAnimations(pageEl) {
     if (Math.abs(dy) > 40) snapTo(pageEl._snap.current + (dy > 0 ? 1 : -1));
   }, { passive: true });
 
-  // IntersectionObserver for content animations
+  // IntersectionObserver for content animations (fires once per section)
   if (!animSections.length) return;
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
       const targets = entry.target.querySelectorAll('.animate-in');
-      if (entry.isIntersecting) {
-        gsap.fromTo(targets,
-          { y: 70, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.0, stagger: 0.13, ease: 'power3.out' }
-        );
-      } else {
-        gsap.set(targets, { y: 70, opacity: 0 });
-      }
+      // Unobserve immediately so snap scroll re-crossing the threshold can't
+      // trigger a reset+restart cycle (which caused the "wobble" effect)
+      observer.unobserve(entry.target);
+
+      // Small delay lets the snap easing finish before cards rise up
+      gsap.fromTo(targets,
+        { y: 70, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: 0.25 }
+      );
     });
-  }, { root: pageEl, threshold: 0.35 });
+  }, { root: pageEl, threshold: 0.4 });
 
   animSections.forEach(s => {
     gsap.set(s.querySelectorAll('.animate-in'), { y: 70, opacity: 0 });
