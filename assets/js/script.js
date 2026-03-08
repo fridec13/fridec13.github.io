@@ -1,26 +1,13 @@
 // ── Project Data ────────────────────────────────────────────────────────────
+// 본문 HTML은 assets/projects/<id>.html 파일로 분리되어 fetch로 로드됩니다.
 const projects = {
   project1: {
-    title: 'LeRobot Tutorial',
-    date: '2025.04',
-    tags: ['Robotics', 'Python', 'Machine Learning'],
-    image: 'https://picsum.photos/seed/lerobot/900/506',
-    overview:
-      'Hugging Face의 LeRobot 라이브러리를 활용한 로봇 팔 모방학습(Imitation Learning) 튜토리얼 시리즈입니다. 실제 하드웨어 없이 시뮬레이션 환경에서 정책 학습을 실험했습니다.',
-    content: `
-      <h3>프로젝트 개요</h3>
-      <p>LeRobot은 Hugging Face에서 제공하는 오픈소스 로봇공학 라이브러리입니다.
-         강화학습 및 모방학습 알고리즘을 시뮬레이션 환경에서 쉽게 실험할 수 있습니다.</p>
-      <h3>주요 내용</h3>
-      <ul>
-        <li>환경 설정 및 의존성 설치 (conda, CUDA)</li>
-        <li>데모 데이터셋 수집 파이프라인 구성</li>
-        <li>ACT(Action Chunking Transformer) 모델 학습</li>
-        <li>학습된 정책으로 로봇 팔 시뮬레이션 제어</li>
-      </ul>
-      <h3>사용 기술</h3>
-      <p>Python · PyTorch · Hugging Face Hub · LeRobot · Gymnasium</p>
-    `,
+    title:    'LeRobot Tutorial',
+    date:     '2025.04',
+    tags:     ['Robotics', 'Python', 'Machine Learning'],
+    image:    'https://picsum.photos/seed/lerobot/900/506',
+    overview: 'Hugging Face의 LeRobot 라이브러리를 활용한 로봇 팔 모방학습(Imitation Learning) 튜토리얼 시리즈입니다. 실제 하드웨어 없이 시뮬레이션 환경에서 정책 학습을 실험했습니다.',
+    src:      'assets/projects/project1.html',
     links: [
       { label: 'GitHub',    href: 'https://github.com/fridec13' },
       { label: 'Blog Post', href: '#' },
@@ -28,122 +15,40 @@ const projects = {
   },
 
   project2: {
-    title: 'Jekyll Blog',
-    date: '2025.04',
-    tags: ['Jekyll', 'GitHub Pages', 'SCSS', 'TypeScript'],
-    image: 'https://picsum.photos/seed/jekyllblog/900/506',
-    overview:
-      'GitHub Pages 기반 개인 기술 블로그입니다. 기존 테마를 처음부터 재설계하여 다크모드, 카테고리, 타임라인, 3D 모델 뷰어 등의 기능을 직접 구현했습니다.',
-    content: `
-      <h3>프로젝트 개요</h3>
-      <p>Jekyll과 GitHub Pages를 활용한 정적 사이트 블로그입니다.
-         기존 테마를 전면 재설계하여 개인 취향에 맞는 디자인과 기능을 구현했습니다.</p>
-      <h3>구현 기능</h3>
-      <ul>
-        <li>완전 커스텀 SCSS 테마 (CSS 변수 기반)</li>
-        <li>카테고리 · 태그 자동 생성 Ruby 플러그인</li>
-        <li>타임라인 레이아웃 페이지</li>
-        <li>Three.js 기반 3D 모델 뷰어 임베드</li>
-        <li>Giscus 댓글 시스템 연동</li>
-        <li>GitHub Actions 자동 빌드/배포</li>
-      </ul>
-      <h3>사용 기술</h3>
-      <p>Jekyll · Liquid · SCSS · TypeScript · GitHub Actions</p>
-    `,
+    title:    'Jekyll Blog',
+    date:     '2025.04',
+    tags:     ['Jekyll', 'GitHub Pages', 'SCSS', 'TypeScript'],
+    image:    'https://picsum.photos/seed/jekyllblog/900/506',
+    overview: 'GitHub Pages 기반 개인 기술 블로그입니다. 기존 테마를 처음부터 재설계하여 다크모드, 카테고리, 타임라인, 3D 모델 뷰어 등의 기능을 직접 구현했습니다.',
+    src:      'assets/projects/project2.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13/fridec13.github.io' },
     ],
   },
 
   project3: {
-    title: 'GSAP Portfolio',
-    date: '2026.03',
-    tags: ['GSAP', 'HTML/CSS', 'Vanilla JS'],
-    image: 'https://picsum.photos/seed/gsapport/900/506',
-    overview:
-      '순수 HTML, CSS, JavaScript와 GSAP 애니메이션 라이브러리만으로 구축한 포트폴리오 페이지입니다. 프레임워크 없이 부드러운 페이지 전환과 인터랙션을 구현했습니다.',
-    content: `
-      <h3>프로젝트 개요</h3>
-      <p>이 포트폴리오 페이지 자체입니다. 프레임워크 없이 순수 웹 기술만으로 SPA와 같은
-         인터랙션을 구현하는 것을 목표로 했습니다.</p>
-      <h3>구현 사항</h3>
-      <ul>
-        <li>GSAP Timeline을 활용한 페이지 전환 애니메이션</li>
-        <li>헤더 네비게이션 기반 뷰 전환 (SPA 구조)</li>
-        <li>프로젝트 사이드바 + 가로 패널 전환</li>
-        <li>GitHub Pages 정적 배포</li>
-        <li>모바일 반응형 레이아웃</li>
-      </ul>
-      <h3>사용 기술</h3>
-      <p>HTML5 · CSS3 · Vanilla JavaScript · GSAP 3</p>
-    `,
+    title:    'GSAP Portfolio',
+    date:     '2026.03',
+    tags:     ['GSAP', 'HTML/CSS', 'Vanilla JS'],
+    image:    'https://picsum.photos/seed/gsapport/900/506',
+    overview: '순수 HTML, CSS, JavaScript와 GSAP 애니메이션 라이브러리만으로 구축한 포트폴리오 페이지입니다. 프레임워크 없이 부드러운 페이지 전환과 인터랙션을 구현했습니다.',
+    src:      'assets/projects/project3.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13/fridec13.github.io' },
     ],
   },
 
   project4: {
-    title: 'Demo Article',
-    date: '2026.03',
-    tags: ['Test', 'Code', 'Table', 'Mermaid'],
-    image: 'https://picsum.photos/seed/demodoc/900/506',
-    overview:
-      '코드 블록, 테이블, Mermaid 차트 렌더링을 확인하기 위한 테스트 아티클입니다.',
-    content: `
-      <h3>파이썬 코드 예시</h3>
-      <pre><code class="language-python">import torch
-import torch.nn as nn
-
-class PolicyNet(nn.Module):
-    def __init__(self, obs_dim, act_dim):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(obs_dim, 256),
-            nn.ReLU(),
-            nn.Linear(256, act_dim),
-        )
-
-    def forward(self, obs):
-        return self.net(obs)
-
-model = PolicyNet(obs_dim=64, act_dim=7)
-n_params = sum(p.numel() for p in model.parameters())
-print("Parameters:", n_params)
-</code></pre>
-
-      <h3>모델 성능 비교</h3>
-      <table>
-        <thead>
-          <tr><th>모델</th><th>성공률</th><th>추론 시간</th><th>메모리</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>ACT</td><td>92.4 %</td><td>12 ms</td><td>3.8 GB</td></tr>
-          <tr><td>Diffusion Policy</td><td>95.1 %</td><td>140 ms</td><td>7.2 GB</td></tr>
-          <tr><td>BC (baseline)</td><td>84.7 %</td><td>4 ms</td><td>1.2 GB</td></tr>
-        </tbody>
-      </table>
-
-      <h3>학습 파이프라인</h3>
-      <div class="mermaid">
-graph LR
-  A[환경 관측] --> B[정책 네트워크]
-  B --> C[행동 출력]
-  C --> D[환경 실행]
-  D -->|done=False| A
-  D -->|done=True| E[에피소드 종료]
-  E --> F[보상 집계]
-  F --> G[정책 업데이트]
-  G --> A
-      </div>
-
-      <h3>인라인 코드</h3>
-      <p>학습 시 <code>batch_size=256</code> 과 <code>lr=3e-4</code> 를 사용했습니다.</p>
-    `,
+    title:    'Demo Article',
+    date:     '2026.03',
+    tags:     ['Test', 'Code', 'Table', 'Mermaid'],
+    image:    'https://picsum.photos/seed/demodoc/900/506',
+    overview: '코드 블록, 테이블, Mermaid 차트 렌더링을 확인하기 위한 테스트 아티클입니다.',
+    src:      'assets/projects/project4.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
     ],
   },
-
 };
 
 // ── Global State ─────────────────────────────────────────────────────────────
@@ -152,8 +57,8 @@ let   currentPage  = 'home';
 let   panelIndex   = 0;
 let   isPanelAnim  = false;
 
-// ── Article HTML builder ──────────────────────────────────────────────────────
-function buildArticleHTML(id) {
+// ── Article shell builder (body content loaded separately via fetch) ──────────
+function buildArticleShell(id) {
   const p = projects[id];
   if (!p) return '';
 
@@ -175,7 +80,7 @@ function buildArticleHTML(id) {
       <hr class="article-divider" />
       ${imageHTML}
       <p class="article-overview">${p.overview}</p>
-      <div class="article-body">${p.content}</div>
+      <div class="article-body"></div>
       ${links ? `<div class="article-links">${links}</div>` : ''}
     </div>
   `;
@@ -195,20 +100,17 @@ function updatePanelUI() {
   );
 }
 
-// ── Init panels (called once on DOMContentLoaded) ─────────────────────────────
-function initPanels() {
+// ── Init panels (async: fetches body HTML from separate files) ────────────────
+async function initPanels() {
   const track  = document.getElementById('projects-track');
   const dotsEl = document.getElementById('panel-dots');
 
+  // 1. Build panel shells synchronously so layout is ready immediately
   projectKeys.forEach((id, i) => {
-    // Panel
     const panel = document.createElement('div');
     panel.className = 'project-panel';
     panel.dataset.project = id;
-    panel.innerHTML = buildArticleHTML(id);
-    if (window.hljs) {
-      panel.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-    }
+    panel.innerHTML = buildArticleShell(id);
     track.appendChild(panel);
 
     if (i === 0) {
@@ -217,7 +119,6 @@ function initPanels() {
       gsap.set(panel, { xPercent: 100, opacity: 0, pointerEvents: 'none' });
     }
 
-    // Dot
     const dot = document.createElement('span');
     dot.className = 'panel-dot' + (i === 0 ? ' active' : '');
     dot.addEventListener('click', () => goToPanel(i));
@@ -230,6 +131,26 @@ function initPanels() {
   });
 
   setupPanelScroll();
+
+  // 2. Fetch all body HTML files in parallel
+  await Promise.all(projectKeys.map(async (id) => {
+    const p      = projects[id];
+    const panel  = track.querySelector(`[data-project="${id}"]`);
+    const bodyEl = panel.querySelector('.article-body');
+
+    try {
+      const res = await fetch(p.src);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      bodyEl.innerHTML = await res.text();
+    } catch (err) {
+      bodyEl.innerHTML = '<p class="error">콘텐츠를 불러오지 못했습니다.</p>';
+      console.error(`[initPanels] Failed to load ${p.src}:`, err);
+    }
+
+    if (window.hljs) {
+      panel.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+    }
+  }));
 }
 
 // ── Go to panel (병풍 fold transition) ───────────────────────────────────────
@@ -496,20 +417,17 @@ function setupSnapAnimations(pageEl) {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  // Mermaid: init before panels so diagrams render on first paint
+window.addEventListener('DOMContentLoaded', async () => {
   if (window.mermaid) {
     const isDark = !document.documentElement.classList.contains('light');
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: isDark ? 'dark' : 'default',
-    });
+    mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default' });
   }
 
   initTheme();
-  initPanels();
 
-  // Save original mermaid source before processing, then run
+  // Wait for all article HTML files to load before running mermaid/hljs
+  await initPanels();
+
   if (window.mermaid) {
     document.querySelectorAll('.mermaid').forEach(el => {
       el.setAttribute('data-mermaid-src', el.innerHTML.trim());

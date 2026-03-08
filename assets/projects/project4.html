@@ -1,0 +1,48 @@
+<h3>파이썬 코드 예시</h3>
+<pre><code class="language-python">import torch
+import torch.nn as nn
+
+class PolicyNet(nn.Module):
+    def __init__(self, obs_dim, act_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, 256),
+            nn.ReLU(),
+            nn.Linear(256, act_dim),
+        )
+
+    def forward(self, obs):
+        return self.net(obs)
+
+model = PolicyNet(obs_dim=64, act_dim=7)
+n_params = sum(p.numel() for p in model.parameters())
+print("Parameters:", n_params)
+</code></pre>
+
+<h3>모델 성능 비교</h3>
+<table>
+  <thead>
+    <tr><th>모델</th><th>성공률</th><th>추론 시간</th><th>메모리</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ACT</td><td>92.4 %</td><td>12 ms</td><td>3.8 GB</td></tr>
+    <tr><td>Diffusion Policy</td><td>95.1 %</td><td>140 ms</td><td>7.2 GB</td></tr>
+    <tr><td>BC (baseline)</td><td>84.7 %</td><td>4 ms</td><td>1.2 GB</td></tr>
+  </tbody>
+</table>
+
+<h3>학습 파이프라인</h3>
+<div class="mermaid">
+graph LR
+  A[환경 관측] --> B[정책 네트워크]
+  B --> C[행동 출력]
+  C --> D[환경 실행]
+  D -->|done=False| A
+  D -->|done=True| E[에피소드 종료]
+  E --> F[보상 집계]
+  F --> G[정책 업데이트]
+  G --> A
+</div>
+
+<h3>인라인 코드</h3>
+<p>학습 시 <code>batch_size=256</code> 과 <code>lr=3e-4</code> 를 사용했습니다.</p>
