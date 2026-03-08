@@ -4,6 +4,7 @@ const projects = {
     title: 'LeRobot Tutorial',
     date: '2025.04',
     tags: ['Robotics', 'Python', 'Machine Learning'],
+    image: 'https://picsum.photos/seed/lerobot/900/506',
     overview:
       'Hugging Face의 LeRobot 라이브러리를 활용한 로봇 팔 모방학습(Imitation Learning) 튜토리얼 시리즈입니다. 실제 하드웨어 없이 시뮬레이션 환경에서 정책 학습을 실험했습니다.',
     content: `
@@ -30,6 +31,7 @@ const projects = {
     title: 'Jekyll Blog',
     date: '2025.04',
     tags: ['Jekyll', 'GitHub Pages', 'SCSS', 'TypeScript'],
+    image: 'https://picsum.photos/seed/jekyllblog/900/506',
     overview:
       'GitHub Pages 기반 개인 기술 블로그입니다. 기존 테마를 처음부터 재설계하여 다크모드, 카테고리, 타임라인, 3D 모델 뷰어 등의 기능을 직접 구현했습니다.',
     content: `
@@ -57,6 +59,7 @@ const projects = {
     title: 'GSAP Portfolio',
     date: '2026.03',
     tags: ['GSAP', 'HTML/CSS', 'Vanilla JS'],
+    image: 'https://picsum.photos/seed/gsapport/900/506',
     overview:
       '순수 HTML, CSS, JavaScript와 GSAP 애니메이션 라이브러리만으로 구축한 포트폴리오 페이지입니다. 프레임워크 없이 부드러운 페이지 전환과 인터랙션을 구현했습니다.',
     content: `
@@ -94,6 +97,10 @@ function buildArticleHTML(id) {
     `<a class="article-link" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`
   ).join('');
 
+  const imageHTML = p.image
+    ? `<div class="article-image"><img src="${p.image}" alt="${p.title}" loading="lazy" /></div>`
+    : '';
+
   return `
     <div class="article-header">
       <div class="article-tags">${tags}</div>
@@ -101,6 +108,7 @@ function buildArticleHTML(id) {
       <span class="article-date">${p.date}</span>
     </div>
     <hr class="article-divider" />
+    ${imageHTML}
     <p class="article-overview">${p.overview}</p>
     <div class="article-body">${p.content}</div>
     ${links ? `<div class="article-links">${links}</div>` : ''}
@@ -202,22 +210,19 @@ document.querySelectorAll('.project-item').forEach(item => {
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // Pre-populate article (no animation, page is hidden)
+  // Pre-populate article while projects page is still hidden
   renderArticle('project1', false);
 
-  // Show home page
+  // Show home page (opacity handled entirely by GSAP, not CSS)
   const homePage = document.getElementById('page-home');
   homePage.style.display = 'block';
   homePage.classList.add('active');
 
-  // Header drop-in
-  gsap.from('#header', { y: -60, opacity: 0, duration: 0.7, ease: 'power3.out' });
+  // Single timeline: header → hero elements in sequence
+  const tl = gsap.timeline();
 
-  // Hero sequence
-  const tl = gsap.timeline({ delay: 0.3 });
-  tl.from('.hero-label', { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out' })
-    .from('.hero-name',  { y: 50, opacity: 0, duration: 0.9, ease: 'power4.out' }, '-=0.4')
-    .from('.hero-desc',  { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out' }, '-=0.5');
-
-  gsap.set(homePage, { opacity: 1 });
+  tl.from('#header',      { y: -60, opacity: 0, duration: 0.6, ease: 'power3.out' })
+    .from('.hero-label',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.1')
+    .from('.hero-name',   { y: 50,  opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.4')
+    .from('.hero-desc',   { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4');
 });
