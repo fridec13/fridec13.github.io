@@ -391,7 +391,7 @@ function setupMobileSidebarScroll() {
   }
 
   function onScroll() {
-    if (this.scrollTop <= 4) showSidebar();
+    if (this.scrollTop <= 0) showSidebar();
     else                     hideSidebar();
   }
 
