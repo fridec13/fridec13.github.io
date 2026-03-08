@@ -349,53 +349,45 @@ function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
-  // overflow:hidden clips content when height→0.
-  // project-list's own overflow-x:auto (horizontal tab scroll) still works
-  // because that overflow is contained inside the project-list element itself.
-  sidebar.style.overflow = 'hidden';
+  // NOTE: overflow:hidden is NOT set here — setting it while #page-projects
+  // is display:none breaks flex layout. It's applied only after height is captured.
+  sidebar.style.transition =
+    'height 0.3s ease, padding-top 0.3s ease, padding-bottom 0.3s ease';
 
-  let visible  = true;
-  let naturalH = 0;
+  let visible     = true;
+  let naturalH    = 0;
+  let initialized = false;
 
   function captureHeight() {
-    if (naturalH) return;
-    // scrollHeight is valid here because projects page is display:block
-    naturalH = sidebar.scrollHeight;
-    // Pin explicit px height so GSAP can read a concrete start value
-    // (GSAP can't reliably tween from CSS height:auto)
-    if (naturalH) sidebar.style.height = naturalH + 'px';
+    if (initialized) return;
+    naturalH = sidebar.scrollHeight; // valid once projects page is display:block
+    if (!naturalH) return;
+    // 1. Pin explicit px height
+    sidebar.style.height = naturalH + 'px';
+    // 2. NOW apply overflow:hidden — layout is already calculated correctly
+    sidebar.style.overflow = 'hidden';
+    initialized = true;
   }
 
   function showSidebar() {
-    if (visible) return;
+    if (visible || !initialized) return;
     visible = true;
-    gsap.to(sidebar, {
-      height: naturalH,
-      paddingTop: 16,    // 1rem
-      paddingBottom: 12, // 0.75rem
-      duration: 0.35,
-      ease: 'power3.out',
-      overwrite: 'auto',
-    });
+    sidebar.style.height        = naturalH + 'px';
+    sidebar.style.paddingTop    = '1rem';
+    sidebar.style.paddingBottom = '0.75rem';
   }
 
   function hideSidebar() {
-    // Capture height on first call (page is visible by the time user scrolls)
-    captureHeight();
-    if (!naturalH || !visible) return;
-
-    // Force reflow so browser registers the pinned px height before we tween to 0
-    void sidebar.offsetHeight;
-
+    if (!visible) return;
+    if (!initialized) {
+      captureHeight();
+      if (!initialized) return; // page not visible yet, skip
+      void sidebar.offsetHeight;  // force reflow before transition starts
+    }
     visible = false;
-    gsap.to(sidebar, {
-      height: 0,
-      paddingTop: 0,
-      paddingBottom: 0,
-      duration: 0.28,
-      ease: 'power2.in',
-      overwrite: 'auto',
-    });
+    sidebar.style.height        = '0px';
+    sidebar.style.paddingTop    = '0';
+    sidebar.style.paddingBottom = '0';
   }
 
   function onScroll() {
@@ -407,7 +399,7 @@ function setupMobileSidebarScroll() {
     panel.addEventListener('scroll', onScroll, { passive: true })
   );
 
-  sidebar._showSidebar  = showSidebar;
+  sidebar._showSidebar   = showSidebar;
   sidebar._captureHeight = captureHeight;
 }
 
