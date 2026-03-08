@@ -306,6 +306,8 @@ function navigateTo(pageId) {
       { y: 20, opacity: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out' },
       '-=0.2'
     );
+    // Reconnect observer with updated root after page is visible
+    tl.call(() => setupSnapAnimations(toEl));
   }
 
   document.querySelectorAll('.nav-link').forEach(link => {
@@ -321,17 +323,55 @@ document.querySelectorAll('[data-page]').forEach(el => {
   });
 });
 
+// ── Snap-section scroll animations ───────────────────────────────────────────
+function setupSnapAnimations(pageEl) {
+  const sections = pageEl.querySelectorAll('[data-snap-animate]');
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const targets = entry.target.querySelectorAll('.animate-in');
+      if (entry.isIntersecting) {
+        // Animate elements in with stagger
+        gsap.fromTo(targets,
+          { y: 60, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: 'power3.out',
+            clearProps: 'transform' }
+        );
+      } else {
+        // Reset so animation replays on re-entry
+        gsap.set(targets, { y: 60, opacity: 0 });
+      }
+    });
+  }, {
+    root: window.innerWidth <= 768 ? null : pageEl,
+    threshold: 0.3,
+  });
+
+  sections.forEach(s => {
+    // Set initial hidden state
+    gsap.set(s.querySelectorAll('.animate-in'), { y: 60, opacity: 0 });
+    observer.observe(s);
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   initPanels();
 
-  const homePage = document.getElementById('page-home');
+  const homePage  = document.getElementById('page-home');
+  const aboutPage = document.getElementById('page-about');
+
   homePage.style.display = 'block';
   homePage.classList.add('active');
+
+  setupSnapAnimations(homePage);
+  setupSnapAnimations(aboutPage);
 
   const tl = gsap.timeline();
   tl.from('#header',     { y: -60, opacity: 0, duration: 0.6, ease: 'power3.out' })
     .from('.hero-label', { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.1')
     .from('.hero-name',  { y: 50,  opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.4')
-    .from('.hero-desc',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4');
+    .from('.hero-desc',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
+    .from('.scroll-hint',{ opacity: 0, duration: 0.5, ease: 'power2.out' }, '-=0.1');
 });
