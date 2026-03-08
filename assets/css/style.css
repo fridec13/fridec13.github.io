@@ -73,6 +73,7 @@ body {
 }
 
 .logo {
+  position: relative;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-1);
@@ -81,6 +82,18 @@ body {
   transition: opacity var(--ease);
 }
 .logo:hover { opacity: 0.7; }
+.logo::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--ease);
+}
+.logo.active::after { transform: scaleX(1); }
 
 nav { display: flex; gap: 2rem; align-items: center; }
 
@@ -689,6 +702,7 @@ nav { display: flex; gap: 2rem; align-items: center; }
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding: 1rem 1rem 0.75rem;
+    overflow: hidden; /* needed for GSAP height collapse */
   }
 
   .project-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }

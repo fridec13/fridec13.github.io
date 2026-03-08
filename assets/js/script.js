@@ -132,6 +132,7 @@ async function initPanels() {
   });
 
   setupPanelScroll();
+  setupMobileSidebarScroll();
 
   // 2. Fetch all body HTML files in parallel
   await Promise.all(projectKeys.map(async (id) => {
@@ -180,6 +181,10 @@ function goToPanel(nextIndex, animate = true) {
       panelIndex  = nextIndex;
       isPanelAnim = false;
       updatePanelUI();
+
+      // Restore sidebar on mobile (might have been hidden while scrolling)
+      const sidebar = document.querySelector('.projects-sidebar');
+      if (sidebar._showSidebar) sidebar._showSidebar();
 
       // Render mermaid diagrams in this panel now that it has real dimensions
       if (window.mermaid) {
@@ -326,6 +331,49 @@ function navigateTo(pageId) {
   document.querySelectorAll('.nav-link').forEach(link => {
     link.classList.toggle('active', link.dataset.page === pageId);
   });
+
+  // Logo underline active only on Home
+  document.querySelector('.logo').classList.toggle('active', pageId === 'home');
+}
+
+// ── Mobile sidebar: hide on scroll-down, show on scroll-up ───────────────────
+function setupMobileSidebarScroll() {
+  if (window.innerWidth > 768) return;
+
+  const sidebar  = document.querySelector('.projects-sidebar');
+  const sidebarH = sidebar.offsetHeight;
+  const padT     = '1rem';
+  const padB     = '0.75rem';
+  let   visible  = true;
+  let   lastST   = 0;
+
+  function showSidebar() {
+    if (visible) return;
+    visible = true;
+    gsap.to(sidebar, { height: sidebarH, paddingTop: padT, paddingBottom: padB,
+      duration: 0.28, ease: 'power2.out' });
+  }
+
+  function hideSidebar() {
+    if (!visible) return;
+    visible = false;
+    gsap.to(sidebar, { height: 0, paddingTop: 0, paddingBottom: 0,
+      duration: 0.28, ease: 'power2.in' });
+  }
+
+  function onScroll() {
+    const st = this.scrollTop;
+    if      (st > lastST + 4 && st > 30) hideSidebar();
+    else if (st < lastST - 4)            showSidebar();
+    lastST = st;
+  }
+
+  getPanels().forEach(panel =>
+    panel.addEventListener('scroll', onScroll, { passive: true })
+  );
+
+  // Expose so goToPanel can restore sidebar on panel switch
+  sidebar._showSidebar = showSidebar;
 }
 
 // ── Header / logo nav ─────────────────────────────────────────────────────────
