@@ -308,6 +308,10 @@ function navigateTo(pageId) {
       const sidebarEl = document.querySelector('.projects-sidebar');
       if (sidebarEl && sidebarEl._initHeight) sidebarEl._initHeight();
 
+      // Capture sidebar height now that the page is visible (scrollHeight is valid)
+      const sb = document.querySelector('.projects-sidebar');
+      if (sb && sb._captureHeight) sb._captureHeight();
+
       // First visit: render mermaid only in the currently visible panel (panel 0)
       if (window.mermaid && !mermaidReady) {
         const firstPanel = getPanels()[0];
@@ -345,13 +349,21 @@ function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
-  sidebar.style.overflow = 'hidden'; // required so GSAP height:0 actually clips content
-  let visible  = true;
-  let naturalH = 0; // captured lazily after Projects page is visible
+  // overflow:hidden clips content when height→0.
+  // project-list's own overflow-x:auto (horizontal tab scroll) still works
+  // because that overflow is contained inside the project-list element itself.
+  sidebar.style.overflow = 'hidden';
 
-  function initHeight() {
+  let visible  = true;
+  let naturalH = 0;
+
+  function captureHeight() {
     if (naturalH) return;
-    naturalH = sidebar.scrollHeight; // reliable once page is display:block
+    // scrollHeight is valid here because projects page is display:block
+    naturalH = sidebar.scrollHeight;
+    // Pin explicit px height so GSAP can read a concrete start value
+    // (GSAP can't reliably tween from CSS height:auto)
+    if (naturalH) sidebar.style.height = naturalH + 'px';
   }
 
   function showSidebar() {
@@ -368,8 +380,13 @@ function setupMobileSidebarScroll() {
   }
 
   function hideSidebar() {
-    initHeight(); // safe to call here — projects page is visible
-    if (!visible) return;
+    // Capture height on first call (page is visible by the time user scrolls)
+    captureHeight();
+    if (!naturalH || !visible) return;
+
+    // Force reflow so browser registers the pinned px height before we tween to 0
+    void sidebar.offsetHeight;
+
     visible = false;
     gsap.to(sidebar, {
       height: 0,
@@ -390,9 +407,8 @@ function setupMobileSidebarScroll() {
     panel.addEventListener('scroll', onScroll, { passive: true })
   );
 
-  // Exposed so navigateTo can prime naturalH right after page becomes visible
-  sidebar._initHeight  = initHeight;
-  sidebar._showSidebar = showSidebar;
+  sidebar._showSidebar  = showSidebar;
+  sidebar._captureHeight = captureHeight;
 }
 
 // ── Header / logo nav ─────────────────────────────────────────────────────────
