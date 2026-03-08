@@ -145,11 +145,13 @@ function initPanels() {
     panel.innerHTML = buildArticleHTML(id);
     track.appendChild(panel);
 
-    // Hide panels except first
-    if (i > 0) {
-      gsap.set(panel, { xPercent: 100, opacity: 0, pointerEvents: 'none' });
-    } else {
+    // Desktop: hide panels except first via GSAP
+    // Mobile: first panel gets .mobile-active, others stay hidden (CSS handles it)
+    if (i === 0) {
       panel.style.pointerEvents = 'auto';
+      panel.classList.add('mobile-active');
+    } else {
+      gsap.set(panel, { xPercent: 100, opacity: 0, pointerEvents: 'none' });
     }
 
     // Dot
@@ -171,12 +173,11 @@ function initPanels() {
 function goToPanel(nextIndex, animate = true) {
   if (nextIndex < 0 || nextIndex >= projectKeys.length) return;
 
-  // Mobile: scroll to panel instead of animating
+  // Mobile: tab-switch (show only selected panel, sidebar stays visible)
   if (window.innerWidth <= 768) {
+    getPanels().forEach((p, i) => p.classList.toggle('mobile-active', i === nextIndex));
     panelIndex = nextIndex;
     updatePanelUI();
-    const panel = getPanels()[nextIndex];
-    if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return;
   }
 

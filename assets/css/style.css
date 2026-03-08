@@ -614,28 +614,37 @@ nav { display: flex; gap: 2rem; align-items: center; }
     height: auto;
   }
 
+  /* Sidebar stays at top while panel content scrolls */
   .projects-sidebar {
     width: 100%;
     height: auto;
+    position: sticky;
+    top: var(--header-h);
+    z-index: 10;
+    background: var(--bg);
     border-right: none;
     border-bottom: 1px solid var(--border);
-    padding: 1.5rem 1rem;
+    padding: 1rem 1rem 0.75rem;
   }
 
   .project-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
   .project-item { border-left: none; border-bottom: 2px solid transparent; }
   .project-item.active { border-bottom-color: var(--accent); border-left-color: transparent; }
 
-  /* On mobile: panels stack vertically, all visible */
+  /* On mobile: only the active panel is shown (tab behavior) */
   .projects-track-wrapper { overflow: visible; height: auto; }
   #projects-track         { position: static; height: auto; }
   .project-panel {
     position: static !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
     transform: none !important;
     height: auto;
     overflow: visible;
+    display: none;       /* hidden by default */
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .project-panel.mobile-active {
+    display: block !important;
   }
 
   .panel-dots { display: none; }
