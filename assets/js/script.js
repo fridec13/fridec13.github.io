@@ -102,16 +102,18 @@ function buildArticleHTML(id) {
     : '';
 
   return `
-    <div class="article-header">
-      <div class="article-tags">${tags}</div>
-      <h1 class="article-title">${p.title}</h1>
-      <span class="article-date">${p.date}</span>
+    <div class="article-inner">
+      <div class="article-header">
+        <div class="article-tags">${tags}</div>
+        <h1 class="article-title">${p.title}</h1>
+        <span class="article-date">${p.date}</span>
+      </div>
+      <hr class="article-divider" />
+      ${imageHTML}
+      <p class="article-overview">${p.overview}</p>
+      <div class="article-body">${p.content}</div>
+      ${links ? `<div class="article-links">${links}</div>` : ''}
     </div>
-    <hr class="article-divider" />
-    ${imageHTML}
-    <p class="article-overview">${p.overview}</p>
-    <div class="article-body">${p.content}</div>
-    ${links ? `<div class="article-links">${links}</div>` : ''}
   `;
 }
 
@@ -123,12 +125,14 @@ function renderArticle(id, animate = true) {
 
   if (!animate) return;
 
+  const inner = articleEl.querySelector('.article-inner');
   const els = [
     '.article-header',
+    '.article-image',
     '.article-overview',
     '.article-body',
     '.article-links',
-  ].map(s => articleEl.querySelector(s)).filter(Boolean);
+  ].map(s => inner?.querySelector(s)).filter(Boolean);
 
   gsap.fromTo(els,
     { opacity: 0, y: 24 },

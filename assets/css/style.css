@@ -184,8 +184,15 @@ nav { display: flex; gap: 2rem; }
 /* Article area */
 .project-article {
   flex: 1;
-  padding: 3.5rem 4rem;
-  max-width: 780px;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.article-inner {
+  width: 100%;
+  max-width: 720px;
+  padding: 3.5rem 2rem;
 }
 
 /* ── Article image ─────────────────────────────────────────── */
