@@ -336,36 +336,36 @@ function navigateTo(pageId) {
   document.querySelector('.logo').classList.toggle('active', pageId === 'home');
 }
 
-// ── Mobile sidebar: hide on scroll-down, show on scroll-up ───────────────────
+// ── Mobile sidebar: visible at top, hidden once scrolled down ────────────────
 function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar  = document.querySelector('.projects-sidebar');
   const sidebarH = sidebar.offsetHeight;
-  const padT     = '1rem';
-  const padB     = '0.75rem';
   let   visible  = true;
-  let   lastST   = 0;
 
   function showSidebar() {
     if (visible) return;
     visible = true;
-    gsap.to(sidebar, { height: sidebarH, paddingTop: padT, paddingBottom: padB,
-      duration: 0.28, ease: 'power2.out' });
+    gsap.to(sidebar, {
+      height: sidebarH, paddingTop: '1rem', paddingBottom: '0.75rem',
+      duration: 0.28, ease: 'power2.out',
+    });
   }
 
   function hideSidebar() {
     if (!visible) return;
     visible = false;
-    gsap.to(sidebar, { height: 0, paddingTop: 0, paddingBottom: 0,
-      duration: 0.28, ease: 'power2.in' });
+    gsap.to(sidebar, {
+      height: 0, paddingTop: 0, paddingBottom: 0,
+      duration: 0.22, ease: 'power2.in',
+    });
   }
 
   function onScroll() {
-    const st = this.scrollTop;
-    if      (st > lastST + 4 && st > 30) hideSidebar();
-    else if (st < lastST - 4)            showSidebar();
-    lastST = st;
+    // Show only when at the very top, hide as soon as scrolled away
+    if (this.scrollTop <= 4) showSidebar();
+    else                     hideSidebar();
   }
 
   getPanels().forEach(panel =>
