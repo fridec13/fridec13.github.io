@@ -352,7 +352,7 @@ function setupMobileSidebarScroll() {
   // NOTE: overflow:hidden is NOT set here — setting it while #page-projects
   // is display:none breaks flex layout. It's applied only after height is captured.
   sidebar.style.transition =
-    'height 0.22s ease-in-out, padding-top 0.22s ease-in-out, padding-bottom 0.22s ease-in-out';
+    'height 0.45s ease-in-out, padding-top 0.45s ease-in-out, padding-bottom 0.45s ease-in-out';
 
   let visible     = true;
   let naturalH    = 0;
