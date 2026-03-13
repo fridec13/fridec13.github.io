@@ -1,3 +1,33 @@
+/* ── Pretendard (local) ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-display: swap;
+  src: local('Pretendard Regular'),
+       url('../fonts/Pretendard-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-display: swap;
+  src: local('Pretendard SemiBold'),
+       url('../fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-display: swap;
+  src: local('Pretendard Bold'),
+       url('../fonts/Pretendard-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  font-display: swap;
+  src: local('Pretendard ExtraBold'),
+       url('../fonts/Pretendard-ExtraBold.woff2') format('woff2');
+}
+
 /* ── Variables ─────────────────────────────────────────────── */
 :root {
   --bg:          #0c0c0c;
@@ -173,11 +203,12 @@ nav { display: flex; gap: 2rem; align-items: center; }
 }
 
 .hero-label {
-  font-size: clamp(0.85rem, 2vw, 1.05rem);
-  letter-spacing: 0.01em;
+  font-size: clamp(1.05rem, 2.8vw, 1.6rem);
+  letter-spacing: -0.01em;
   color: var(--text-2);
   margin-bottom: 1.2rem;
   line-height: 1.6;
+  font-weight: 400;
 }
 
 .hero-name {
@@ -734,6 +765,120 @@ nav { display: flex; gap: 2rem; align-items: center; }
   color: var(--text-1);
 }
 
+/* ── History & Certs section ───────────────────────────────── */
+.history-section { align-items: flex-start; justify-content: center; }
+
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem 4rem;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 860px;
+}
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 0 1.2rem;
+  position: relative;
+  padding-bottom: 1.6rem;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 90px;
+  top: 6px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item:last-child::before { display: none; }
+
+.tl-year {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.tl-body {
+  padding-left: 1.4rem;
+  position: relative;
+}
+.tl-body::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.tl-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.4;
+  margin-bottom: 0.25rem;
+}
+.tl-sub {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* Cert list */
+.cert-col { display: flex; flex-direction: column; gap: 1.6rem; }
+
+.cert-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 0.75rem;
+}
+
+.cert-items { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.cert-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.875rem;
+  color: var(--text-1);
+}
+.cert-item::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.award-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.award-item strong { color: var(--text-1); display: block; margin-bottom: 0.2rem; }
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 768px) {
   #page-home, #page-about {
@@ -744,6 +889,7 @@ nav { display: flex; gap: 2rem; align-items: center; }
   .header-inner { padding: 0 1rem; }
   .hero { min-height: 100svh; }
   .focus-cards { grid-template-columns: 1fr; }
+  .history-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .exp-item { gap: 1.25rem; }
   .scroll-hint { display: none; }
   /* Column layout, full viewport height so absolute panels still work */
