@@ -1,0 +1,134 @@
+<p>
+  SSAFY 12기 공통 프로젝트로 팀원 6인이 함께 개발한 무인 순찰 로봇 통합 관제 솔루션입니다.
+  ROS2 기반 Gazebo 시뮬레이터와 FastAPI 백엔드, Vue 3 프론트엔드로 구성된 전체 스택을
+  7주 안에 처음부터 구축한 프로젝트로, 로봇 2대의 실시간 위치 추적·원격 제어·CCTV 스트리밍을 웹 인터페이스에서 통합 관제하는 것을 목표로 했습니다.
+</p>
+<p>
+  프로젝트 종료 시점까지 <strong>유휴 상태 CPU 75~80% 점유</strong> 문제를 원인 규명 단계에서 마무리하지 못했으며,
+  이 미해결 과제는 이후 <em>ROBOCOP 로컬 포팅 및 고도화</em> 프로젝트에서 다시 꺼내 해결했습니다.
+</p>
+
+<hr>
+
+<h2>시스템 구성</h2>
+
+<div class="mermaid">
+graph TD
+  subgraph WSL2["WSL2 (Ubuntu 22.04)"]
+    ROS["ROS2 Humble<br/>Gazebo 시뮬레이터"]
+    BRIDGE["rosbridge_server<br/>WebSocket :9090"]
+    ROS --> BRIDGE
+  end
+
+  subgraph Backend["Backend (FastAPI)"]
+    API["REST API<br/>:8080"]
+    CAM["Camera Service<br/>MJPEG 스트리밍"]
+    LIDAR["LiDAR Service<br/>SSE 포인트클라우드"]
+    BRIDGE -->|"subscribe/publish"| API
+    BRIDGE -->|"image_raw 토픽"| CAM
+    BRIDGE -->|"scan 토픽"| LIDAR
+  end
+
+  subgraph DB["MongoDB"]
+    ROBOTS["robots 컬렉션"]
+    MAPS["map 컬렉션"]
+    USERS["users 컬렉션"]
+  end
+
+  subgraph Frontend["Frontend (Vue 3 + Vite)"]
+    DASH["관제 대시보드<br/>로봇 목록 · 상태 · 배터리"]
+    MAP2D["2D ECharts 맵<br/>로봇 실시간 위치"]
+    CCTV["CCTV 뷰어<br/>4스트림"]
+    CTRL["로봇 제어<br/>Navigate · Patrol · Stop"]
+  end
+
+  API --> DB
+  API --> Frontend
+  CAM -->|"MJPEG stream"| CCTV
+  LIDAR -->|"SSE"| Frontend
+</div>
+
+<hr>
+
+<h2>주요 기능</h2>
+
+<table>
+  <thead><tr><th>기능</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td>로봇 관제 대시보드</td><td>로봇 리스트, 상태(waiting/navigate/patrol/charging), 배터리, 활성 여부 표시</td></tr>
+    <tr><td>실시간 위치 추적</td><td>ROS2 odom 토픽 → SSE → ECharts 2D 맵에 로봇 마커 실시간 업데이트</td></tr>
+    <tr><td>원격 경로 제어</td><td>맵 노드 클릭 → Navigate/Patrol/Homing 명령을 ROS2 토픽으로 발행</td></tr>
+    <tr><td>CCTV 스트리밍</td><td>로봇 2대 × 전·후방 카메라 4스트림 MJPEG 제공</td></tr>
+    <tr><td>라이다 시각화</td><td>LaserScan 토픽 기반 2D 포인트 뷰어</td></tr>
+    <tr><td>관리자 인증</td><td>bcrypt 해시 기반 로그인, JWT 토큰 발급·검증</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>담당 역할</h2>
+
+<h3>백엔드 설계 및 구현</h3>
+<p>
+  FastAPI 기반 REST API 전체 구조를 설계하고, Motor(async MongoDB 드라이버)로
+  로봇·맵·사용자 컬렉션을 구성했습니다.
+  roslibpy를 활용한 ROS Bridge 클라이언트 연동과 카메라 MJPEG 스트리밍 엔드포인트를 구현했습니다.
+</p>
+
+<h3>로봇 센서 토픽 중개</h3>
+<p>
+  rosbridge WebSocket을 통해 ROS2 토픽 데이터(<code>/odom</code>, <code>/image_raw</code>, <code>/scan</code>)를
+  백엔드 서버로 수신하고, SSE 및 MJPEG 스트리밍으로 프론트엔드에 전달하는 파이프라인을 구축했습니다.
+</p>
+
+<h3>배포 환경 설정</h3>
+<p>
+  Nginx 리버스 프록시와 Docker Compose를 활용해 백엔드·프론트엔드·MongoDB를 컨테이너로 묶고
+  EC2 인스턴스에 배포했습니다.
+  WSL2 ↔ Windows 호스트 ↔ EC2 간 네트워크 구성과 rosbridge 포트 포워딩을 설정했습니다.
+</p>
+
+<h3>프론트엔드 와이어프레임</h3>
+<p>
+  Figma로 관제 대시보드 와이어프레임을 설계하고, 팀원과의 역할 분담 기준을 제안했습니다.
+</p>
+
+<hr>
+
+<h2>미해결 과제 — 유휴 CPU 75~80% 점유</h2>
+
+<p>
+  프로젝트 기간 중 유휴 상태 CPU 점유율이 75~80%에 달하는 현상을 발견했지만,
+  일정 내에 근본 원인을 규명하지 못하고 종료했습니다.
+  당시 제기한 가설은 다음과 같았습니다.
+</p>
+
+<table>
+  <thead><tr><th>가설</th><th>결론</th></tr></thead>
+  <tbody>
+    <tr><td>WSL2 리소스 경합</td><td>Python 프로세스 단독 측정으로 배제 확인</td></tr>
+    <tr><td>카메라 토픽 대역폭 과부하</td><td>ROS Bridge 오프라인 상태에서도 동일 현상 → 배제</td></tr>
+    <tr><td>roslibpy + Twisted busy-wait</td><td>원인으로 의심했으나 프로젝트 내 제거 미완료</td></tr>
+  </tbody>
+</table>
+
+<p>
+  이 미해결 과제는 <em>ROBOCOP 로컬 포팅 및 고도화</em>에서
+  roslibpy 제거 + websockets/asyncio 전환 + uvicorn --reload 제거를 통해
+  유휴 CPU 0.3% 수준으로 해결되었습니다.
+</p>
+
+<hr>
+
+<h2>기술 스택</h2>
+
+<table>
+  <thead><tr><th>분류</th><th>기술</th></tr></thead>
+  <tbody>
+    <tr><td>백엔드</td><td>Python 3.10, FastAPI, Uvicorn, Motor, roslibpy</td></tr>
+    <tr><td>ROS 연동</td><td>ROS2 Humble, Gazebo, rosbridge_server (WebSocket)</td></tr>
+    <tr><td>프론트엔드</td><td>Vue 3 + Vite, ECharts</td></tr>
+    <tr><td>DB</td><td>MongoDB</td></tr>
+    <tr><td>인프라</td><td>Docker, Nginx, AWS EC2, WSL2</td></tr>
+  </tbody>
+</table>

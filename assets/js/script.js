@@ -2,11 +2,11 @@
 // 본문 HTML은 assets/projects/<id>.html 파일로 분리되어 fetch로 로드됩니다.
 const projects = {
   project1: {
-    title:    'LeRobot Tutorial',
-    date:     '2025.04',
-    tags:     ['Robotics', 'Python', 'Machine Learning'],
+    title:    'LeRobot — Bimanual Teleoperation',
+    date:     '2025.04 ~ 2025.05',
+    tags:     ['ROS2', 'Python', 'ACT', 'Imitation Learning'],
     image:    'https://picsum.photos/seed/lerobot/900/506',
-    overview: 'Hugging Face의 LeRobot 라이브러리를 활용한 로봇 팔 모방학습(Imitation Learning) 튜토리얼 시리즈입니다. 실제 하드웨어 없이 시뮬레이션 환경에서 정책 학습을 실험했습니다.',
+    overview: 'Hugging Face LeRobot 기반 양손 협응 로봇팔 제어 프로젝트입니다. 웹캠 3대·로봇팔 2개로 데이터를 수집하고 ACT 모델을 학습해 6개 태스크를 자율 수행하도록 구현했습니다. SSAFY 12기 자율 프로젝트.',
     src:      'assets/projects/project1.html',
     links: [
       { label: 'GitHub',    href: 'https://github.com/fridec13' },
@@ -16,7 +16,7 @@ const projects = {
 
   project2: {
     title:    'Jekyll Blog',
-    date:     '2025.04',
+    date:     '2025.06 ~',
     tags:     ['Jekyll', 'GitHub Pages', 'SCSS', 'TypeScript'],
     image:    'https://picsum.photos/seed/jekyllblog/900/506',
     overview: 'GitHub Pages 기반 개인 기술 블로그입니다. 기존 테마를 처음부터 재설계하여 다크모드, 카테고리, 타임라인, 3D 모델 뷰어 등의 기능을 직접 구현했습니다.',
@@ -28,7 +28,7 @@ const projects = {
 
   project3: {
     title:    'GSAP Portfolio',
-    date:     '2026.03',
+    date:     '2026.03 ~',
     tags:     ['GSAP', 'HTML/CSS', 'Vanilla JS'],
     image:    'https://picsum.photos/seed/gsapport/900/506',
     overview: '순수 HTML, CSS, JavaScript와 GSAP 애니메이션 라이브러리만으로 구축한 포트폴리오 페이지입니다. 프레임워크 없이 부드러운 페이지 전환과 인터랙션을 구현했습니다.',
@@ -52,11 +52,47 @@ const projects = {
 
   project5: {
     title:    'ROBOCOP 로컬 포팅 및 고도화',
-    date:     '2026.03',
+    date:     '2026.03.10 ~ 2026.03.12',
     tags:     ['ROS2', 'FastAPI', 'Vue3', 'Three.js', 'Python', 'MongoDB'],
     image:    'assets/images/robocop-3dmap.png',
     overview: '무인 순찰 로봇 관제 시스템을 로컬 환경으로 재포팅하면서, 미해결로 남았던 유휴 CPU 75~80% 점유 문제를 구조적으로 재분석해 0.3% 수준으로 개선한 리팩터링 프로젝트입니다.',
     src:      'assets/projects/project5.html',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/fridec13' },
+    ],
+  },
+
+  project6: {
+    title:    'ROBOCOP 무인 순찰 로봇 관제',
+    date:     '2025.01 ~ 2025.02',
+    tags:     ['ROS2', 'FastAPI', 'Vue3', 'Gazebo', 'Docker', 'MongoDB'],
+    image:    'https://picsum.photos/seed/robocop/900/506',
+    overview: 'SSAFY 12기 공통 프로젝트. ROS2·Gazebo 기반 로봇 2대의 실시간 위치 추적·원격 제어·CCTV 스트리밍을 Vue3 대시보드에서 통합 관제하는 솔루션입니다. FastAPI + Motor + Docker + Nginx 전체 스택을 7주 안에 설계·구축했습니다.',
+    src:      'assets/projects/project6.html',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/fridec13' },
+    ],
+  },
+
+  project7: {
+    title:    'GPT 컨베이어 공정 자동화',
+    date:     '2024.10 ~ 2024.11',
+    tags:     ['ROS2', 'YOLO', 'ChatGPT', 'Raspberry Pi', 'Python'],
+    image:    'https://picsum.photos/seed/conveyor/900/506',
+    overview: 'SSAFY 12기 관통 프로젝트 최우수상 수상작. 4DOF Dobot Magician 로봇팔이 음성 명령(STT + ChatGPT)으로 픽앤플레이스 작업을 수행하고, YOLO로 불량 부품을 검출해 라즈베리파이 컨베이어에서 자동 분류하는 공정 자동화 시스템입니다.',
+    src:      'assets/projects/project7.html',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/fridec13' },
+    ],
+  },
+
+  project8: {
+    title:    '블록체인 반려동물 의료정보 관리',
+    date:     '2025.01 ~ 2025.02',
+    tags:     ['Solidity', 'React', 'Spring Boot', 'MetaMask', 'Ethereum'],
+    image:    'https://picsum.photos/seed/petchain/900/506',
+    overview: 'SSAFY 12기 공통 프로젝트. 프라이빗 이더리움 네트워크(Besu)에서 가스비 없이 반려동물 진료 기록을 스마트컨트랙트로 관리합니다. 보호자가 병원별 조회 권한을 직접 부여·회수하는 서버리스 DApp 아키텍처로 설계했습니다.',
+    src:      'assets/projects/project8.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
     ],
