@@ -737,6 +737,26 @@ nav { display: flex; gap: 2rem; align-items: center; }
 
 .about-content { max-width: 600px; width: 100%; }
 
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color var(--ease);
+  width: fit-content;
+}
+.contact-item:hover { color: var(--accent); }
+.contact-item svg { flex-shrink: 0; opacity: 0.7; }
+
 .about-title {
   font-size: 2.5rem;
   font-weight: 700;
