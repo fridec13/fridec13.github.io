@@ -1,0 +1,371 @@
+<p>
+  무인 순찰 로봇 통합 관제 시스템 ROBOCOP을 로컬 환경으로 재포팅하면서, 공통 프로젝트 단계에서 끝내 해결하지 못했던
+  <strong>유휴 CPU 75~80% 점유 문제</strong>를 근본 원인부터 재분석해 수치로 검증한 리팩터링 프로젝트입니다.
+  Windows 11 + WSL2 단일 PC 위에서 ROS2, FastAPI, Vue3 전체 스택을 구동하며
+  로봇 2대·카메라 4스트림을 동시에 운용하는 시나리오에서 안정적인 관제와 스트리밍을 보장하는 구조로 재설계했습니다.
+</p>
+
+<!-- 핵심 수치 요약 -->
+<div class="metric-grid">
+  <div class="metric-card">
+    <span class="metric-value">−99.6%</span>
+    <span class="metric-label">유휴 CPU (80% → 0.3%)</span>
+  </div>
+  <div class="metric-card">
+    <span class="metric-value">−59.7%</span>
+    <span class="metric-label">카메라 ON CPU (31% → 12.5%)</span>
+  </div>
+  <div class="metric-card">
+    <span class="metric-value">−34%</span>
+    <span class="metric-label">메모리 (157.9 → 103.7 MB)</span>
+  </div>
+  <div class="metric-card">
+    <span class="metric-value">3일</span>
+    <span class="metric-label">집중 리팩터링 기간</span>
+  </div>
+</div>
+
+<hr>
+
+<h2>문제 1 — 유휴 CPU 75~80% 점유</h2>
+
+<h3>문제 수치 확인</h3>
+<p>
+  백엔드 실행 직후 아무 요청이 없는 유휴 상태에서 PowerShell로 Python 프로세스 CPU를 측정한 결과,
+  CPU 누적값이 초당 약 1.5초씩 증가하며 물리 CPU의 75~80%를 상시 점유하고 있었습니다.
+</p>
+<pre><code class="language-text">16:32:42 | MEM: 157.9MB | CPU: 94.6s
+16:32:44 | MEM: 157.7MB | CPU: 96.2s   ← CPU 누적값 1.6s/2s = 80% 점유
+16:32:46 | MEM: 157.9MB | CPU: 97.7s
+16:32:48 | MEM: 157.9MB | CPU: 99.2s</code></pre>
+
+<h3>원인 분석</h3>
+<table>
+  <thead><tr><th>#</th><th>원인</th><th>관련 파일</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><code>roslibpy</code> 임포트만으로 Twisted 이벤트 루프가 백그라운드 스레드에서 busy-wait 방식으로 자동 시작</td>
+      <td><code>ros_bridge_connection.py</code>, <code>robot_service.py</code>, <code>camera_service.py</code></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><code>socket_service.py</code>의 <code>while True: server.accept()</code> 블로킹 루프가 별도 스레드 점유</td>
+      <td><code>socket_service.py</code></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><code>uvicorn --reload</code>가 OneDrive 경로 위에서 <code>StatReload</code>로 파일시스템 지속 폴링</td>
+      <td>실행 명령</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  주요 발견은 <code>robot_service.py</code>에 roslibpy import가 잔존해 있었다는 점입니다.
+  <code>ros_bridge_connection.py</code>에서 먼저 roslibpy를 제거했지만,
+  <code>robot_service.py</code>의 <code>import roslibpy</code> 한 줄이 Twisted 반응기를 다시 활성화시키고 있었습니다.
+</p>
+<pre><code class="language-python"># robot_service.py (수정 전)
+import roslibpy          # ← 이 한 줄만으로 Twisted busy-wait 루프 재시작
+import roslibpy.comm
+...
+topic = roslibpy.Topic(self.ros_bridge.client, '/robot/status', '...')
+topic.subscribe(callback)</code></pre>
+
+<h3>해결</h3>
+<pre><code class="language-python"># ros_bridge_connection.py (수정 후)
+import asyncio
+import websockets
+
+class RosBridgeClient:
+    async def connect(self, url: str):
+        self._ws = await websockets.connect(url)
+        asyncio.create_task(self._recv_loop())
+
+    async def subscribe(self, topic: str, msg_type: str, callback):
+        await self._send({"op": "subscribe", "topic": topic, "type": msg_type})
+        self._subs[topic].append(callback)
+
+    async def _recv_loop(self):
+        async for raw in self._ws:
+            msg = json.loads(raw)
+            for cb in self._subs.get(msg.get("topic"), []):
+                await cb(msg.get("msg", {}))</code></pre>
+
+<p>추가로 <code>socket_service.py</code>를 <code>asyncio.start_server()</code>로 비동기화하고, <code>uvicorn --reload</code> 옵션을 제거했습니다.</p>
+
+<h3>개선 결과</h3>
+<pre><code class="language-text">16:48:47 | MEM: 101.1MB | CPU: 1.8s
+16:49:01 | MEM: 103.7MB | CPU: 1.9s   ← CPU 누적값 0.1s/14s ≈ 0.7%
+16:50:19 | MEM: 106.9MB | CPU: 2.2s
+...2분 후에도 CPU: 2.1s (증가 없음)</code></pre>
+
+<table>
+  <thead><tr><th>항목</th><th>개선 전</th><th>개선 후</th></tr></thead>
+  <tbody>
+    <tr><td>CPU 점유율 (유휴)</td><td><strong>~75–80%</strong></td><td><strong>~0%</strong></td></tr>
+    <tr><td>메모리 사용량</td><td>157.9 MB</td><td>103.7 MB</td></tr>
+    <tr><td>메모리 절감</td><td>—</td><td><strong>–54 MB (–34%)</strong></td></tr>
+  </tbody>
+</table>
+
+<h3>참고 — uvicorn --reload + OneDrive 경로 조합</h3>
+<p>
+  roslibpy 제거만으로는 CPU를 완전히 0%에 수렴시키지 못했습니다.
+  <code>--reload</code> 플래그와 OneDrive 동기화 경로의 조합이 추가 부하를 일으켰습니다.
+</p>
+<table>
+  <thead><tr><th>조건</th><th>CPU 점유율</th></tr></thead>
+  <tbody>
+    <tr><td>roslibpy 잔존 + --reload</td><td><strong>~75–80%</strong></td></tr>
+    <tr><td>roslibpy 제거 + --reload</td><td><strong>~10–15%</strong> (StatReload 폴링)</td></tr>
+    <tr><td>roslibpy 제거 + reload 없음</td><td><strong>~0%</strong> ✓</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>문제 2 — 카메라 페이지 이탈 후 CPU 누수</h2>
+
+<h3>문제 현상</h3>
+<p>
+  CCTV 페이지에서 4스트림을 열면 CPU가 약 31%까지 상승하고,
+  페이지를 닫아도 CPU 사용률이 유지되는 현상이 발생했습니다.
+</p>
+<pre><code class="language-text">10:42:47 | MEM: 124.5MB | CPU: 43.4s   ← CCTV 닫고도 CPU 감소 없음</code></pre>
+
+<h3>원인 분석</h3>
+<p>
+  <code>camera_service.py</code>의 <code>stream_front()</code>가 무한 루프로 동작하면서
+  HTTP 연결 종료 시에도 ROS 토픽 구독을 해제하지 않는 구조였습니다.
+  매 HTTP 요청마다 <code>subscribe()</code>만 호출하고 <code>unsubscribe()</code>는 없었기 때문에,
+  페이지를 열수록 구독이 누적되었습니다.
+</p>
+<pre><code class="language-python"># camera_service.py (수정 전)
+async def stream_front(self):
+    interval = 1.0 / self.fps
+    while True:                          # 무한 루프
+        frame = await asyncio.wait_for(...)
+        yield (b'--frame\r\n...' + buffer + b'\r\n')
+        await asyncio.sleep(interval)
+        # HTTP 클라이언트 연결 종료 시 GeneratorExit 발생하지만
+        # finally 블록이 없어 구독 해제 로직이 실행되지 않음</code></pre>
+
+<h3>해결 — 레퍼런스 카운팅 기반 구독 수명 관리</h3>
+<pre><code class="language-python"># camera_service.py (수정 후)
+async def stream_front(self):
+    # 첫 소비자 진입 시 구독 시작
+    if not self._front_subscribed and self._front_topic_name:
+        await bridge.subscribe(topic_name, topic_type, self._on_front_image)
+        self._front_subscribed = True
+
+    self._front_consumers += 1   # 카운터 증가
+    try:
+        while True:
+            frame = await asyncio.wait_for(self._front_queue.get(), ...)
+            yield (b'--frame\r\n...' + buffer + b'\r\n')
+    finally:
+        # HTTP 연결 종료(GeneratorExit) 시 항상 실행
+        self._front_consumers -= 1
+        if self._front_consumers == 0:
+            await bridge.unsubscribe(topic_name, self._on_front_image)
+            self._front_subscribed = False  # ROS 토픽 구독 해제</code></pre>
+
+<h3>개선 결과</h3>
+<table>
+  <thead><tr><th>상태</th><th>수정 전</th><th>수정 후</th></tr></thead>
+  <tbody>
+    <tr><td>카메라 ON (4스트림)</td><td><strong>~31%</strong></td><td><strong>~12.5%</strong></td></tr>
+    <tr><td>카메라 페이지 이탈 후</td><td><strong>~31% 유지 (누수)</strong></td><td><strong>~7.9% (회수)</strong></td></tr>
+    <tr><td>ON → OFF 절감량</td><td>0%</td><td><strong>~4.6%</strong></td></tr>
+  </tbody>
+</table>
+
+<p>추가로 FPS·해상도·JPEG 품질을 조정해 OpenCV 처리 부하를 줄였습니다.</p>
+<table>
+  <thead><tr><th>파라미터</th><th>변경 전</th><th>변경 후</th></tr></thead>
+  <tbody>
+    <tr><td>FPS</td><td>10</td><td>5</td></tr>
+    <tr><td>해상도</td><td>640×480 (307,200 px)</td><td>480×360 (172,800 px)</td></tr>
+    <tr><td>JPEG 품질</td><td>75</td><td>70</td></tr>
+    <tr><td>초당 디코딩 횟수 (4스트림)</td><td>40회/s</td><td>20회/s</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>문제 3 — MongoDB DuplicateKey 오류</h2>
+
+<p>
+  백엔드 시작 시마다 <code>robotId_1</code> 인덱스에서
+  <code>{ robotId: null }</code> 중복으로 인한 DuplicateKey 오류가 발생했습니다.
+  MongoDB의 <code>unique</code> 인덱스는 기본적으로 <code>null</code> 값도 중복으로 취급하는데,
+  덤프 데이터에 <code>robotId</code> 필드가 없거나 null인 문서가 여러 개 존재했던 것이 원인이었습니다.
+</p>
+<pre><code class="language-python"># connection.py (수정 후) — sparse=True 추가
+await db.robots.create_index("robotId", unique=True, sparse=True)
+await db.robots.create_index("name",    unique=True, sparse=True)
+# sparse=True: null 또는 필드 없는 문서는 인덱스에서 제외
+#              → null 값 중복 허용, 기존 문서 18건 보존</code></pre>
+
+<p>기존에 생성된 non-sparse 인덱스를 스크립트로 제거 후 재생성하여, 서버 시작 시 인덱스 오류가 완전히 사라졌습니다.</p>
+
+<hr>
+
+<h2>문제 4 — robot_patrol 레이스 컨디션</h2>
+
+<p>
+  Navigate/Homing으로 목표에 도달한 뒤 다시 Navigate 명령을 보내면,
+  로봇이 즉시 <code>waiting</code> 상태로 복귀하고 이동을 시작하지 않는 현상이 있었습니다.
+</p>
+<pre><code class="language-text">[robot_patrol]: 경로에 도달했습니다. Waiting service 호출하여 대기모드로 전환.
+← 이후 새 명령을 보내도 수 초 내에 다시 waiting으로 복귀</code></pre>
+
+<p>
+  <code>robot_patrol.cpp</code>의 <code>follow_path()</code>에서 경로 도달 후
+  <code>global_path_received_</code> 플래그와 <code>path_queue_</code>를 초기화하지 않아,
+  다음 명령 도착 시 <code>follow_current_path()</code>가 빈 큐를 "이미 도착한 상태"로 오해하는 레이스 컨디션이었습니다.
+</p>
+
+<div class="mermaid">
+sequenceDiagram
+  participant CMD as 명령
+  participant PP as global_path_planner
+  participant PATROL as robot_patrol
+
+  CMD->>PATROL: 1차 navigate
+  PP->>PATROL: 경로 토픽 발행
+  PATROL->>PATROL: follow_path() — 이동 완료
+  Note over PATROL: global_path_received_ = true (리셋 안 됨)<br/>path_queue_ = empty
+
+  CMD->>PATROL: 2차 navigate
+  PP-->>PATROL: 경로 계산 중...
+  PATROL->>PATROL: pose_callback 즉시 실행
+  Note over PATROL: path_queue_.empty() → true<br/>→ "이미 도착" 오판
+  PATROL->>PATROL: callWaitingService() 재호출
+</div>
+
+<pre><code class="language-cpp">// robot_patrol.cpp — follow_path() 수정 후
+bool reached = follow_current_path();
+if (reached) {
+    RCLCPP_INFO(this->get_logger(), "경로에 도달했습니다.");
+    // 다음 명령을 위한 상태 초기화 (핵심 수정)
+    global_path_received_ = false;
+    clearQueue(path_queue_);
+    clearQueue(save_path_queue_);
+    callTempStop();
+    callWaitingService();
+    return;
+}</code></pre>
+
+<hr>
+
+<h2>전체 CPU 개선 타임라인</h2>
+
+<table>
+  <thead>
+    <tr><th>단계</th><th>날짜</th><th>CPU 점유율</th><th>주요 변경</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>초기 상태</td><td>03-10</td><td><strong>~75–80%</strong></td><td>roslibpy + --reload, 유휴 상태</td></tr>
+    <tr><td>roslibpy 제거 + websockets 전환</td><td>03-10</td><td><strong>~31%</strong></td><td>카메라 4스트림 구독 중</td></tr>
+    <tr><td>fps/해상도 축소 (5fps, 480×360)</td><td>03-10</td><td><strong>~24%</strong></td><td>OpenCV 처리 부하 감소</td></tr>
+    <tr><td>구독 수명 관리 도입</td><td>03-12</td><td><strong>~12.5%</strong></td><td>카메라 시청 중</td></tr>
+    <tr><td>카메라 페이지 이탈 후</td><td>03-12</td><td><strong>~7.9%</strong></td><td>구독 해제 후 안정화</td></tr>
+    <tr><td>완전 유휴 (ROS 연결만)</td><td>03-12</td><td><strong>~0.3%</strong></td><td>카메라 미시청</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>3D 맵 뷰어 도입</h2>
+
+<p>
+  기존 ECharts 기반 2D 맵에서 Three.js 3D 뷰어(<code>MapViewer3D.vue</code>)로 전환했습니다.
+  Blender로 제작한 GLB 오피스 모델 위에 로봇 실시간 위치와 경로 노드를 실좌표로 렌더링합니다.
+</p>
+
+<figure>
+  <img src="assets/images/robocop-3dmap.png" alt="Three.js 3D 맵 뷰어 — 로봇 위치 및 경로 노드" />
+  <figcaption>Three.js 3D 맵 뷰어 — GLB 오피스 모델 위에 경로 노드와 로봇 마커를 실좌표로 렌더링</figcaption>
+</figure>
+
+<p>
+  UTM 좌표를 Three.js 좌표계로 변환하는 함수를 작성하고,
+  실제 로봇 2대의 GPS UTM 측정값으로 원점(UTM_ORIGIN)을 역산하여 GLB 모델과 약 5m 이내 오차로 정렬했습니다.
+</p>
+<pre><code class="language-javascript">const UTM_ORIGIN_X = 304411.645  // c101.world GPS origin → UTM 역산값
+const UTM_ORIGIN_Y = 3892836.76
+
+function utmToScene(utmX, utmY) {
+  return {
+    x:  utmX - UTM_ORIGIN_X,   // UTM East  → Three.js +X
+    z: -(utmY - UTM_ORIGIN_Y), // UTM North → Three.js -Z (Y-up 반전)
+  }
+}</code></pre>
+
+<h3>웹 기반 글로벌 패스 맵 메이커</h3>
+
+<p>
+  GLB 모델과 좌표계 정합 후, 기존 44개 노드짜리 맵을 재제작하기 위한
+  웹 기반 탑뷰 맵 편집기(<code>MapMakerView.vue</code>)를 구현했습니다.
+  Orthographic 카메라로 GLB 모델을 내려다보며 꺾임점을 클릭하면
+  지정 간격(기본 1.0m)으로 노드를 자동 보간 생성합니다.
+</p>
+
+<figure>
+  <img src="assets/images/robocop-mapmaker.png" alt="웹 기반 글로벌 패스 맵 메이커" />
+  <figcaption>웹 기반 맵 메이커 — 꺾임점 클릭으로 경로 노드 자동 보간 생성, JSON으로 서버에 바로 저장</figcaption>
+</figure>
+
+<table>
+  <thead><tr><th>항목</th><th>이전 맵</th><th>재제작 맵</th></tr></thead>
+  <tbody>
+    <tr><td>노드 수</td><td>44개</td><td>172개</td></tr>
+    <tr><td>링크 수</td><td>43개</td><td>171개</td></tr>
+    <tr><td>노드 간격</td><td>불균일 (0.3–3.2m)</td><td>균일 (~0.4m)</td></tr>
+    <tr><td>GLB 정합</td><td>맞지 않음</td><td>맞춤</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>기타 개선 사항</h2>
+
+<h3>프론트엔드 인코딩 깨짐 해결</h3>
+<p>
+  Vue 파일 25개가 EUC-KR(CP949)로 저장되어 있어 Vite 컴파일 오류가 발생했습니다.
+  Python 스크립트에서 <code>\uXXXX</code> 유니코드 이스케이프를 사용해 순수 ASCII로 파일을 재작성함으로써 해결했습니다.
+</p>
+
+<h3>deep watcher 범위 최소화</h3>
+<p>
+  <code>RobotMap.vue</code>의 <code>watch(robots, ..., { deep: true })</code>가
+  2초마다 들어오는 로봇 위치 SSE 업데이트에 반응해 매번 SSE를 재연결하면서 노드 선택이 초기화되는 버그가 있었습니다.
+  watcher를 <code>robots.map(r => r.seq).join(',')</code> 형태로 변경하여
+  로봇 수가 바뀔 때만 재연결하도록 수정했습니다.
+</p>
+
+<h3>bcrypt 해시 필드 매핑 버그</h3>
+<p>
+  <code>auth_repository.py</code>에서 DB 필드 <code>hashedPassword</code>를
+  불필요하게 <code>hashed_password</code>로 rename하는 코드가 있어
+  <code>verify_password(password, None)</code>가 항상 <code>False</code>를 반환하던 버그를 수정했습니다.
+</p>
+
+<hr>
+
+<h2>기술 스택</h2>
+
+<table>
+  <thead><tr><th>분류</th><th>기술</th></tr></thead>
+  <tbody>
+    <tr><td>백엔드</td><td>Python 3.10, FastAPI, Uvicorn, Motor(MongoDB)</td></tr>
+    <tr><td>ROS 연동</td><td>ROS2 Humble, websockets + asyncio 기반 ROS Bridge</td></tr>
+    <tr><td>스트리밍</td><td>OpenCV, NumPy, MJPEG over HTTP</td></tr>
+    <tr><td>인증</td><td>bcrypt, JWT</td></tr>
+    <tr><td>프론트엔드</td><td>Vue 3 + Vite, Three.js (GLB 렌더링, OrbitControls)</td></tr>
+    <tr><td>인프라</td><td>Windows 11 + WSL2 (Ubuntu 22.04), MongoDB, Gazebo + TurtleBot3</td></tr>
+  </tbody>
+</table>

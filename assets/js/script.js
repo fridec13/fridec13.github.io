@@ -49,6 +49,18 @@ const projects = {
       { label: 'GitHub', href: 'https://github.com/fridec13' },
     ],
   },
+
+  project5: {
+    title:    'ROBOCOP 로컬 포팅 및 고도화',
+    date:     '2026.03',
+    tags:     ['ROS2', 'FastAPI', 'Vue3', 'Three.js', 'Python', 'MongoDB'],
+    image:    'assets/images/robocop-3dmap.png',
+    overview: '무인 순찰 로봇 관제 시스템을 로컬 환경으로 재포팅하면서, 미해결로 남았던 유휴 CPU 75~80% 점유 문제를 구조적으로 재분석해 0.3% 수준으로 개선한 리팩터링 프로젝트입니다.',
+    src:      'assets/projects/project5.html',
+    links: [
+      { label: 'GitHub', href: 'https://github.com/fridec13' },
+    ],
+  },
 };
 
 // ── Global State ─────────────────────────────────────────────────────────────
