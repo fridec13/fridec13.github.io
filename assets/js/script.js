@@ -459,20 +459,44 @@ document.querySelectorAll('[data-page]').forEach(el => {
   });
 });
 
-// ── Theme toggle ─────────────────────────────────────────────────────────────
+// ── Theme toggle (3-mode: dark → light → read → dark) ────────────────────────
 function initTheme() {
-  const btn  = document.getElementById('theme-toggle');
-  const html = document.documentElement;
+  const btn       = document.getElementById('theme-toggle');
+  const html      = document.documentElement;
+  const hljsTheme = document.getElementById('hljs-theme');
 
-  function applyTheme(isLight) {
-    html.classList.toggle('light', isLight);
-    btn.textContent = isLight ? '☾\uFE0E' : '☀\uFE0E'; // \uFE0E forces text (monochrome) rendering on iOS
-    btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  const HLJS_DARK  = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+  const HLJS_LIGHT = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
 
-    // Re-render already-processed mermaid diagrams with the new theme
+  // mode: 'dark' | 'light' | 'read'
+  function applyTheme(mode) {
+    html.classList.remove('light', 'read');
+
+    const isDark = mode === 'dark';
+
+    if (mode === 'light') {
+      html.classList.add('light');
+      btn.textContent = 'Aa';            // → 다음은 가독성 모드
+      btn.title       = '가독성 모드로 전환';
+    } else if (mode === 'read') {
+      html.classList.add('read');
+      btn.textContent = '☾\uFE0E';       // → 다음은 다크 모드
+      btn.title       = '다크 모드로 전환';
+    } else {
+      btn.textContent = '☀\uFE0E';       // → 다음은 라이트 모드
+      btn.title       = '라이트 모드로 전환';
+    }
+
+    // highlight.js 테마 교체
+    if (hljsTheme) {
+      hljsTheme.href = isDark ? HLJS_DARK : HLJS_LIGHT;
+    }
+
+    localStorage.setItem('theme', mode);
+
+    // Mermaid 테마 재렌더링
     if (window.mermaid && mermaidReady) {
-      mermaid.initialize({ startOnLoad: false, theme: isLight ? 'default' : 'dark' });
+      mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default' });
       document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
         const src = el.getAttribute('data-mermaid-src');
         if (src) {
@@ -484,13 +508,16 @@ function initTheme() {
     }
   }
 
+  // 클릭: dark → light → read → dark 순환
   btn.addEventListener('click', () => {
-    applyTheme(!html.classList.contains('light'));
+    const cur  = localStorage.getItem('theme') || 'dark';
+    const next = cur === 'dark' ? 'light' : cur === 'light' ? 'read' : 'dark';
+    applyTheme(next);
   });
 
-  // Restore saved preference
+  // 저장된 설정 복원
   const saved = localStorage.getItem('theme');
-  if (saved === 'light') applyTheme(true);
+  if (saved === 'light' || saved === 'read') applyTheme(saved);
 }
 
 // ── GSAP-controlled snap scroll + section enter animations ───────────────────
