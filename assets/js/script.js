@@ -431,9 +431,18 @@ function setupMobileSidebarScroll() {
     sidebar.style.transform = 'translateY(-100%)';
   }
 
+  let lastScrollTop = 0;
+
   function onScroll() {
-    if (this.scrollTop <= 0) showSidebar();
-    else                     hideSidebar();
+    const st = this.scrollTop;
+    if (st <= 0) {
+      showSidebar();
+    } else if (st > lastScrollTop) {
+      hideSidebar();   // scrolling down
+    } else {
+      showSidebar();   // scrolling up
+    }
+    lastScrollTop = st;
   }
 
   getPanels().forEach(panel =>
