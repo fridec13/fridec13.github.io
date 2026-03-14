@@ -87,11 +87,11 @@ const projects = {
   },
 
   project8: {
-    title:    '블록체인 반려동물 의료정보 관리',
-    date:     '2025.01 ~ 2025.02',
-    tags:     ['Solidity', 'React', 'Spring Boot', 'MetaMask', 'Ethereum'],
-    image:    'https://picsum.photos/seed/petchain/900/506',
-    overview: 'SSAFY 12기 공통 프로젝트. 프라이빗 이더리움 네트워크(Besu)에서 가스비 없이 반려동물 진료 기록을 스마트컨트랙트로 관리합니다. 보호자가 병원별 조회 권한을 직접 부여·회수하는 서버리스 DApp 아키텍처로 설계했습니다.',
+    title:    'KKUKKKUK — 반려동물 의료정보 관리',
+    date:     '2025.03 ~ 2025.04',
+    tags:     ['Solidity', 'React', 'Spring Boot', 'MetaMask', 'Ethereum', 'Flutter'],
+    image:    'assets/images/kkukkkuk-logo.png',
+    overview: 'SSAFY 12기 공통 프로젝트. 프라이빗 이더리움 네트워크(Besu)에서 가스비 없이 반려동물 진료 기록을 스마트컨트랙트로 관리합니다. 보호자가 병원별 조회 권한을 직접 부여·회수하는 DIDRegistry 아키텍처로 설계했습니다.',
     src:      'assets/projects/project8.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
