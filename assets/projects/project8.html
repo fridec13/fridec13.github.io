@@ -76,36 +76,124 @@
 
 <hr>
 
-<h2>핵심 설계 — 보호자 중심 접근 제어</h2>
+<h2>핵심 설계 — DIDRegistry 컨트랙트</h2>
 
 <p>
   기존 의료 시스템에서 진료 기록의 소유권은 병원에 있었습니다.
-  이 프로젝트는 스마트컨트랙트를 통해 <strong>보호자가 기록의 소유권을 갖고</strong>,
-  병원별로 조회 권한을 부여하거나 회수하는 구조로 설계했습니다.
+  이 프로젝트는 <strong>DID(탈중앙화 식별자) 개념을 반려동물에 적용</strong>해,
+  각 반려동물이 고유한 이더리움 주소를 가지고 보호자가 병원별 접근 권한을 직접 제어하는
+  <code>DIDRegistry</code> 컨트랙트를 설계했습니다.
 </p>
 
-<pre><code class="language-solidity">// PetMedical.sol (핵심 로직)
-mapping(address => mapping(address => bool)) private permissions;
-// permissions[보호자][병원] = 조회 권한 여부
+<h3>데이터 구조</h3>
 
-function grantAccess(address hospital) external {
-    permissions[msg.sender][hospital] = true;
-    emit AccessGranted(msg.sender, hospital);
+<pre><code class="language-solidity">// DIDRegistry.sol — 핵심 상태 변수
+
+// 반려동물 주소 => 소유자(보호자) 주소
+mapping(address => address) public owners;
+
+// 반려동물 주소 => 접근 권한이 있는 병원 주소 배열
+mapping(address => address[]) public hospitals;
+
+// 반려동물 주소 => 속성명 => 속성 구조체 (의료 기록, 프로필 등 모든 데이터를 key-value로 저장)
+mapping(address => mapping(string => Attribute)) private attributes;
+
+// 반려동물 주소 => 병원 주소 => 공유 계약 (시간 제한 접근)
+mapping(address => mapping(address => SharingAgreement)) public sharingAgreements;
+
+struct SharingAgreement {
+    bool   exists;
+    string scope;          // 공유 범위 ("all", "basic", "medical")
+    uint   createdAt;
+    uint   expireDate;     // 최소 1일 ~ 최대 30일
+    bool   notificationSent;
 }
 
-function revokeAccess(address hospital) external {
-    permissions[msg.sender][hospital] = false;
-    emit AccessRevoked(msg.sender, hospital);
-}
+// 공유 기간 상수
+uint public constant MIN_SHARING_PERIOD = 1 days;
+uint public constant MAX_SHARING_PERIOD = 30 days;
+uint public constant NOTIFICATION_THRESHOLD = 3 days; // 만료 3일 전 알림</code></pre>
 
-function getMedicalRecord(address owner, uint256 petId)
-    external view returns (MedicalRecord memory)
-{
-    require(
-        msg.sender == owner || permissions[owner][msg.sender],
-        "Access denied"
+<h3>반려동물 등록 — 단일 트랜잭션으로 속성 일괄 저장</h3>
+
+<pre><code class="language-solidity">function registerPetWithAttributes(
+    address petAddress,
+    string memory name,
+    string memory gender,
+    string memory breedName,
+    string memory birth,
+    bool flagNeutering,
+    string memory speciesName,
+    string memory profileUrl
+) public {
+    require(owners[petAddress] == address(0), "Pet address is already registered");
+    owners[petAddress] = msg.sender;
+    _addPetToOwner(msg.sender, petAddress);
+
+    uint validity = 100 * 365 * 24 * 60 * 60; // 100년 유효
+
+    _setAttributeInternal(petAddress, "name", name, validity);
+    _setAttributeInternal(petAddress, "gender", gender, validity);
+    _setAttributeInternal(petAddress, "breedName", breedName, validity);
+    _setAttributeInternal(petAddress, "flagNeutering", flagNeutering ? "true" : "false", validity);
+    // ...
+
+    emit PetRegistered(petAddress, msg.sender, block.timestamp);
+}</code></pre>
+
+<h3>시간 제한 공유 계약 — QR 스캔 시 실행되는 트랜잭션</h3>
+
+<pre><code class="language-solidity">function addHospitalWithSharing(
+    address petAddress,
+    address hospitalAddress,
+    string memory scope,
+    uint sharingPeriod   // 1일 ~ 30일
+) public {
+    require(msg.sender == owners[petAddress], "Only owner can add hospital access");
+    require(sharingPeriod >= MIN_SHARING_PERIOD && sharingPeriod <= MAX_SHARING_PERIOD);
+
+    uint expireDate = block.timestamp + sharingPeriod;
+
+    sharingAgreements[petAddress][hospitalAddress] = SharingAgreement(
+        true, scope, block.timestamp, expireDate, false
     );
-    return records[owner][petId];
+
+    emit SharingAgreementCreated(petAddress, hospitalAddress, scope, expireDate, block.timestamp);
+}
+
+// 만료 확인 — view 함수이므로 가스 없이 로컬 호출
+function hasAccess(address petAddress, address user) public view returns (bool) {
+    if (owners[petAddress] == user) return true;
+
+    SharingAgreement memory agreement = sharingAgreements[petAddress][user];
+    if (agreement.exists) {
+        return block.timestamp <= agreement.expireDate; // 만료 시 false 반환
+    }
+    // ...
+}</code></pre>
+
+<h3>의료 기록 저장 — Hub-Spoke 구조</h3>
+<p>
+  진료 기록은 JSON 문자열로 직렬화되어 <code>setAttribute()</code>를 통해 온체인 저장됩니다.
+  최초 기록(<code>medical_record_*</code>)이 허브가 되고, 이후 수정 기록(<code>medical_update_*</code>)이
+  원본 키를 참조하는 Spoke 방식으로 연결됩니다.
+  블록체인의 불변성 때문에 삭제는 <code>isDeleted: true</code> 필드를 추가하는 소프트 삭제로 처리했습니다.
+</p>
+
+<pre><code class="language-solidity">// 의료 기록 키 구조
+// 원본: "medical_record_{timestamp}_{hospitalAddress}"
+// 수정: "medical_update_{timestamp}_{hospitalAddress}"
+
+// Hub-Spoke: 원본 기록 키 => 연결된 수정 기록 키 배열
+mapping(string => string[]) private medicalRecordUpdates;
+
+// 소프트 삭제 — 블록체인 불변성으로 실제 삭제 불가, isDeleted 플래그로 처리
+function softDeleteMedicalRecord(address petAddress, string memory recordKey) public {
+    // ...
+    string memory updatedData = replaceJsonBoolValue(recordData, "isDeleted", "true");
+    updatedData = addJsonFieldValue(updatedData, "deletedAt", uint2str(block.timestamp));
+    updatedData = addJsonFieldValue(updatedData, "deletedBy", addressToString(msg.sender));
+    setAttribute(petAddress, recordKey, updatedData, expireDate - block.timestamp);
 }</code></pre>
 
 <hr>
