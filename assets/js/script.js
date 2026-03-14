@@ -392,15 +392,14 @@ function navigateTo(pageId) {
   document.querySelector('.logo').classList.toggle('active', pageId === 'home');
 }
 
-// ── Mobile sidebar: collapse on scroll, reveal at top ────────────────────────
+// ── Mobile sidebar: overlay slide on scroll ───────────────────────────────────
+// The sidebar is position:absolute over the article area (see CSS).
+// Sliding it via transform keeps the article's scroll position intact —
+// the track-wrapper never resizes, so no layout reflow occurs.
 function setupMobileSidebarScroll() {
   if (window.innerWidth > 768) return;
 
   const sidebar = document.querySelector('.projects-sidebar');
-  // NOTE: overflow:hidden is NOT set here — setting it while #page-projects
-  // is display:none breaks flex layout. It's applied only after height is captured.
-  sidebar.style.transition =
-    'height 0.2s cubic-bezier(0.4,0,0.2,1), padding-top 0.2s cubic-bezier(0.4,0,0.2,1), padding-bottom 0.2s cubic-bezier(0.4,0,0.2,1)';
 
   let visible     = true;
   let naturalH    = 0;
@@ -408,21 +407,18 @@ function setupMobileSidebarScroll() {
 
   function captureHeight() {
     if (initialized) return;
-    naturalH = sidebar.scrollHeight; // valid once projects page is display:block
+    naturalH = sidebar.offsetHeight; // valid once projects page is display:block
     if (!naturalH) return;
-    // 1. Pin explicit px height
-    sidebar.style.height = naturalH + 'px';
-    // 2. NOW apply overflow:hidden — layout is already calculated correctly
-    sidebar.style.overflow = 'hidden';
+    // Set padding-top on every panel so content starts below the sidebar overlay.
+    // This space is always reserved; the sidebar covers it when visible.
+    getPanels().forEach(p => { p.style.paddingTop = naturalH + 'px'; });
     initialized = true;
   }
 
   function showSidebar() {
-    if (visible || !initialized) return;
+    if (visible) return;
     visible = true;
-    sidebar.style.height        = naturalH + 'px';
-    sidebar.style.paddingTop    = '1rem';
-    sidebar.style.paddingBottom = '0.75rem';
+    sidebar.style.transform = 'translateY(0)';
   }
 
   function hideSidebar() {
@@ -430,12 +426,9 @@ function setupMobileSidebarScroll() {
     if (!initialized) {
       captureHeight();
       if (!initialized) return; // page not visible yet, skip
-      void sidebar.offsetHeight;  // force reflow before transition starts
     }
     visible = false;
-    sidebar.style.height        = '0px';
-    sidebar.style.paddingTop    = '0';
-    sidebar.style.paddingBottom = '0';
+    sidebar.style.transform = 'translateY(-100%)';
   }
 
   function onScroll() {
