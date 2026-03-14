@@ -397,9 +397,9 @@ function navigateTo(pageId) {
 // Sliding it via transform keeps the article's scroll position intact —
 // the track-wrapper never resizes, so no layout reflow occurs.
 function setupMobileSidebarScroll() {
-  if (window.innerWidth > 768) return;
-
   const sidebar = document.querySelector('.projects-sidebar');
+
+  const isMobile = () => window.innerWidth <= 768;
 
   let visible     = true;
   let naturalH    = 0;
@@ -407,6 +407,7 @@ function setupMobileSidebarScroll() {
 
   function captureHeight() {
     if (initialized) return;
+    if (!isMobile()) return;
     naturalH = sidebar.offsetHeight; // valid once projects page is display:block
     if (!naturalH) return;
     // Set padding-top on every panel so content starts below the sidebar overlay.
@@ -416,12 +417,14 @@ function setupMobileSidebarScroll() {
   }
 
   function showSidebar() {
+    if (!isMobile()) return;
     if (visible) return;
     visible = true;
     sidebar.style.transform = 'translateY(0)';
   }
 
   function hideSidebar() {
+    if (!isMobile()) return;
     if (!visible) return;
     if (!initialized) {
       captureHeight();
@@ -431,9 +434,22 @@ function setupMobileSidebarScroll() {
     sidebar.style.transform = 'translateY(-100%)';
   }
 
+  // Reset to desktop state when viewport widens beyond mobile breakpoint
+  function onResize() {
+    if (!isMobile()) {
+      sidebar.style.transform = '';
+      getPanels().forEach(p => { p.style.paddingTop = ''; });
+      visible     = true;
+      initialized = false;
+      naturalH    = 0;
+    }
+  }
+  window.addEventListener('resize', onResize);
+
   let lastScrollTop = 0;
 
   function onScroll() {
+    if (!isMobile()) return;
     const st = this.scrollTop;
     if (st <= 0) {
       showSidebar();
