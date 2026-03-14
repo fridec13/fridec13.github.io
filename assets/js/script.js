@@ -434,14 +434,25 @@ function setupMobileSidebarScroll() {
     sidebar.style.transform = 'translateY(-100%)';
   }
 
-  // Reset to desktop state when viewport widens beyond mobile breakpoint
+  // Adapt sidebar when viewport crosses the mobile breakpoint
+  let wasMobile = isMobile();
   function onResize() {
-    if (!isMobile()) {
+    const mobile = isMobile();
+    if (wasMobile === mobile) return; // no breakpoint crossing, skip
+    wasMobile = mobile;
+
+    if (!mobile) {
+      // Crossed into desktop: strip all mobile-only inline styles
       sidebar.style.transform = '';
       getPanels().forEach(p => { p.style.paddingTop = ''; });
       visible     = true;
       initialized = false;
       naturalH    = 0;
+      lastScrollTop = 0;
+    } else {
+      // Crossed back into mobile: re-capture height and restore padding
+      lastScrollTop = 0;
+      captureHeight();
     }
   }
   window.addEventListener('resize', onResize);
