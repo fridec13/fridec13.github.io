@@ -203,8 +203,7 @@ function softDeleteMedicalRecord(address petAddress, string memory recordKey) pu
 <h3>스마트컨트랙트 설계 및 배포</h3>
 <p>
   Solidity로 반려동물 의료 기록 저장·조회·권한 관리 로직을 구현하고
-  Remix IDE를 통해 프라이빗 이더리움 네트워크에 배포했습니다.
-  반복 테스트를 위해 배포 스크립트를 Hardhat으로 자동화하고,
+  Remix IDE를 통해 SSAFY 제공 프라이빗 이더리움 네트워크(Besu)에 배포했습니다.
   컨트랙트 ABI를 프론트엔드에서 직접 임포트하는 방식으로 연동 구조를 단순화했습니다.
 </p>
 
@@ -244,7 +243,7 @@ function softDeleteMedicalRecord(address petAddress, string memory recordKey) pu
 <table>
   <thead><tr><th>분류</th><th>기술</th></tr></thead>
   <tbody>
-    <tr><td>블록체인</td><td>Solidity, Remix IDE, Hardhat, Hyperledger Besu (프라이빗 이더리움)</td></tr>
+    <tr><td>블록체인</td><td>Solidity, Remix IDE, Hyperledger Besu (SSAFY 제공 프라이빗 이더리움)</td></tr>
     <tr><td>웹 프론트엔드</td><td>React, ethers.js, MetaMask, Redux</td></tr>
     <tr><td>모바일</td><td>Flutter 3, Dart, Android Studio</td></tr>
     <tr><td>백엔드</td><td>Java, Spring Boot, MySQL, Redis, JWT, OAuth</td></tr>
