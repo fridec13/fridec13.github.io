@@ -369,3 +369,94 @@ function utmToScene(utmX, utmY) {
     <tr><td>인프라</td><td>Windows 11 + WSL2 (Ubuntu 22.04), MongoDB, Gazebo + TurtleBot3</td></tr>
   </tbody>
 </table>
+
+<hr>
+
+<h2>기술 회고록</h2>
+
+<p>프로젝트 마무리 후 기술 선택과 문제 해결 과정을 돌아보며 정리한 회고입니다.</p>
+
+<h3>백엔드 프레임워크 — FastAPI 선택</h3>
+
+<p>개발 초기 Django vs FastAPI를 두고 고민했습니다.</p>
+
+<table>
+  <thead><tr><th>항목</th><th>Django</th><th>FastAPI</th></tr></thead>
+  <tbody>
+    <tr><td>설계 기반</td><td>동기(sync) 중심, async는 후에 추가</td><td>처음부터 asyncio 기반</td></tr>
+    <tr><td>SSE / WebSocket</td><td>어색한 통합</td><td>자연스러운 연동</td></tr>
+    <tr><td>API 문서</td><td>별도 설정 필요</td><td>Swagger 자동 생성</td></tr>
+    <tr><td>실시간 파이프라인</td><td>구조적 불일치</td><td>최적화된 구조</td></tr>
+  </tbody>
+</table>
+
+<p>ROS 토픽 → SSE → 프론트 실시간 스트리밍이 핵심인 프로젝트 특성상 <strong>FastAPI 선택은 올바른 판단이었습니다.</strong></p>
+
+<h3>GIL 심층 분석 — roslibpy가 치명적이었던 이유</h3>
+
+<p>roslibpy는 내부적으로 Twisted 이벤트 루프를 별도 스레드에서 운영합니다. 카메라처럼 대용량 데이터가 오가는 환경에서 이것이 왜 치명적인지는 Python GIL 동작 원리로 설명됩니다.</p>
+
+<pre><code class="language-text">ROS 메시지 (바이너리)
+  → rosbridge: base64 + JSON 직렬화  0.92MB → 1.2MB로 증가
+  → WebSocket 전송
+  → roslibpy 스레드: json.loads() 역직렬화  ← GIL 점유
+  → base64 디코딩                           ← GIL 점유
+  → 콜백 실행</code></pre>
+
+<p>Python은 멀티스레드를 지원하더라도 GIL로 인해 한 번에 하나의 스레드만 Python 코드를 실행할 수 있습니다. roslibpy 스레드가 대용량 JSON 파싱으로 GIL을 오래 점유하면 asyncio가 끼어들 틈이 없습니다.</p>
+
+<pre><code class="language-text">스레드A (asyncio):  [기다림][기다림][겨우실행][기다림]
+스레드B (roslibpy): [json파싱━━━━][json파싱━━━━][json파싱━━━━]
+                        ↑
+                    GIL을 오래 점유 → asyncio가 끼어들 틈 없음
+
+멀티코어여도 마찬가지:
+코어1: roslibpy 스레드 (json 파싱 중)
+코어2: 비어있음  ← asyncio가 GIL 없어서 실행 불가</code></pre>
+
+<p><strong>카메라가 방아쇠였다면, roslibpy는 총이었습니다.</strong> 카메라 단독이었다면 부하가 있어도 견딜 수 있는 수준이었을 것입니다. roslibpy가 큰 데이터를 처리하는 동안 GIL을 오래 점유하면서 asyncio 루프 전체가 멈추는 현상이 발생했습니다.</p>
+
+<h3>roslibpy를 쓸 수밖에 없었던 구조적 이유</h3>
+
+<p>rclpy(ROS2 네이티브 Python 라이브러리)는 Linux 전용입니다. 백엔드가 Windows에서 동작하므로 rosbridge를 중간에 둘 수밖에 없었고, roslibpy는 그 제약 안에서의 최선이었습니다. asyncio WebSocket으로의 전환은 같은 rosbridge 프로토콜을 유지하면서 Twisted 의존성만 제거한 것입니다.</p>
+
+<pre><code class="language-text">이 프로젝트 구조:
+  FastAPI 백엔드 → Windows (rclpy 사용 불가)
+  ROS2 / Gazebo  → WSL2 (Linux)
+  → 두 환경을 잇는 rosbridge가 필수, 클라이언트 라이브러리 선택이 관건</code></pre>
+
+<h3>다른 언어를 썼다면?</h3>
+
+<table>
+  <thead><tr><th>언어</th><th>GIL</th><th>JSON 파싱</th><th>ROS 연동</th><th>현실 가능성</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Python (현재)</strong></td><td>있음</td><td>보통</td><td>asyncio 전환으로 해결</td><td>채택</td></tr>
+    <tr><td><strong>Node.js</strong></td><td>없음</td><td>V8 네이티브 (빠름)</td><td>roslibjs (구조 동일, 파싱 빠름)</td><td>가능했음</td></tr>
+    <tr><td><strong>Java</strong></td><td>없음</td><td>빠름</td><td>roslibj</td><td>팀 인력 없음</td></tr>
+    <tr><td><strong>C++</strong></td><td>없음</td><td>매우 빠름</td><td>rclcpp 네이티브</td><td>개발 생산성 낮음</td></tr>
+  </tbody>
+</table>
+
+<p>Node.js가 GIL 없이 이 문제를 더 자연스럽게 피해갈 수 있었을 것입니다. 단, AI 모델 서빙(YOLO 등)은 Python이 필수이므로 어느 방식이든 Python은 어딘가에 필요했습니다. <strong>백엔드를 Python으로 통일한 것은 관리 측면에서 합리적인 선택이었습니다.</strong></p>
+
+<h3>핵심 개념 정리</h3>
+
+<p><strong>CPU 사용률 측정 원리</strong></p>
+<pre><code class="language-text">CPU% = (Δcpu_time / Δwall_time) × 100
+
+- cpu_time : 프로세스가 실제로 CPU를 사용한 누적 시간 (초)
+- wall_time : 실제 경과 시간 (벽시계 시간)
+
+예: 2초 동안 cpu_time이 1.5s 증가 → 1.5 / 2.0 × 100 = 75%</code></pre>
+
+<p><strong>Python GIL 요약</strong></p>
+<pre><code class="language-text">Python은 멀티스레드를 지원하지만 GIL로 인해 한 번에 하나의 스레드만 실행된다.
+CPU 집중 작업 스레드가 GIL을 오래 점유하면 다른 스레드는 실행 기회를 잃는다.
+asyncio는 단일 스레드 비동기 방식으로, GIL 경합 자체를 없앤다.</code></pre>
+
+<p><strong>직렬화 / 역직렬화 오버헤드</strong></p>
+<pre><code class="language-text">직렬화:   바이너리 이미지 → base64 인코딩 → JSON 문자열  (0.92MB → 1.2MB)
+역직렬화: JSON 문자열 → json.loads() → base64 디코딩 → Python 객체
+
+rclpy(네이티브 DDS)를 쓰면 이 변환 단계 없이 바이너리를 직접 처리한다.
+rosbridge를 거쳐야 하는 Windows 환경에서는 이 오버헤드가 불가피했다.</code></pre>
