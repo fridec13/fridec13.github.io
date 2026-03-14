@@ -82,6 +82,18 @@ html.read .hero-name {
   background-clip: text;
 }
 
+/* 가독성 모드 태그 — 6색 순환 */
+html.read .tag {
+  border-color: transparent;
+  font-weight: 600;
+}
+html.read .article-tags .tag:nth-child(6n+1) { background: #fee2e2; color: #991b1b; }
+html.read .article-tags .tag:nth-child(6n+2) { background: #fef3c7; color: #92400e; }
+html.read .article-tags .tag:nth-child(6n+3) { background: #dcfce7; color: #166534; }
+html.read .article-tags .tag:nth-child(6n+4) { background: #dbeafe; color: #1e40af; }
+html.read .article-tags .tag:nth-child(6n+5) { background: #f3e8ff; color: #6b21a8; }
+html.read .article-tags .tag:nth-child(6n+6) { background: #ccfbf1; color: #0f766e; }
+
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
