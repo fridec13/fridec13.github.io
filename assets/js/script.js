@@ -671,7 +671,6 @@ document.addEventListener('keydown', e => {
 
 function getPrintItems() {
   return [
-    { id: 'header',  label: '헤더 / 연락처',        type: 'meta' },
     { id: 'history', label: 'History & Education', type: 'meta' },
     ...projectKeys.map(k => ({
       id:    k,
@@ -848,9 +847,8 @@ function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHT
     `<li><a href="#proj-${k}">${projects[k].title}</a><span class="toc-date">${projects[k].date}</span></li>`
   ).join('');
 
-  // Build sections in user-defined order
-  const sections = selectedIds.map(id => {
-    if (id === 'header') return `
+  // Header is always first (fixed)
+  const headerHTML = `
 <div class="print-header">
   <div class="print-name">김성훈</div>
   <div class="print-contacts">
@@ -860,6 +858,8 @@ function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHT
   </div>
 </div>`;
 
+  // Build sections in user-defined order
+  const sections = [headerHTML, ...selectedIds.map(id => {
     if (id === 'history') return `
 <div class="print-history">
   <div class="section-label">History &amp; Education</div>
@@ -888,7 +888,7 @@ function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHT
 </section>`;
     }
     return '';
-  }).join('\n');
+  })].join('\n');
 
   return `<!DOCTYPE html>
 <html lang="ko"${themeClass ? ` class="${themeClass}"` : ''}>
@@ -1075,23 +1075,17 @@ html.read .article-body ol li { color: var(--text-1); }
 html.read .article-overview { color: var(--text-1); }
 
 /* Print media */
+/* animate-in starts hidden in main site — force visible in print window */
+.animate-in { opacity: 1 !important; transform: none !important; }
+
 @media print {
   body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .print-project { page-break-before: always; }
+  .print-project + .print-project { page-break-before: always; }
   .print-toc { page-break-after: always; }
 }
 </style>
 </head>
 <body>
-
-<div class="print-header">
-  <div class="print-name">김성훈</div>
-  <div class="print-contacts">
-    <span>maybecold@naver.com</span>
-    <span>blog.naver.com/maybecold</span>
-    <span>github.com/fridec13</span>
-  </div>
-</div>
 
 ${sections}
 
