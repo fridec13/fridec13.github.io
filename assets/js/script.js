@@ -721,6 +721,10 @@ function buildEditorHTML(items) {
       </div>
       <p class="pe-hint">포함할 섹션을 선택하고 순서를 조정하세요</p>
       <ul class="pe-list">${rows}</ul>
+      <div class="pe-option-row">
+        <input type="checkbox" id="pe-pagebreak" class="pe-check">
+        <label for="pe-pagebreak" class="pe-option-label">첫 프로젝트 앞 페이지 나눔</label>
+      </div>
       <div class="pe-footer">
         <button class="pe-cancel">취소</button>
         <button class="pe-print-btn">⎙&nbsp; 인쇄</button>
@@ -754,17 +758,31 @@ function bindEditorEvents(overlay) {
     refreshArrows(list);
   });
 
+  const pageBreakCb = overlay.querySelector('#pe-pagebreak');
+
+  // auto-sync page-break checkbox with history selection
+  const syncPageBreak = () => {
+    const historyItem = list.querySelector('[data-id="history"]');
+    if (historyItem) {
+      pageBreakCb.checked = historyItem.querySelector('.pe-check').checked;
+    }
+  };
+  syncPageBreak();
+
   list.addEventListener('change', e => {
-    if (e.target.classList.contains('pe-check'))
+    if (e.target.classList.contains('pe-check')) {
       e.target.closest('.pe-item').classList.toggle('pe-off', !e.target.checked);
+      if (e.target.closest('.pe-item').dataset.id === 'history') syncPageBreak();
+    }
   });
 
   overlay.querySelector('.pe-print-btn').addEventListener('click', () => {
     const selected = [...list.querySelectorAll('.pe-item')]
       .filter(li => li.querySelector('.pe-check').checked)
       .map(li => li.dataset.id);
+    const firstPageBreak = pageBreakCb.checked;
     closePrintEditor();
-    executePrint(selected);
+    executePrint(selected, firstPageBreak);
   });
 
   refreshArrows(list);
@@ -790,7 +808,7 @@ function setPrintToast(msg) {
   return el;
 }
 
-async function executePrint(selectedIds) {
+async function executePrint(selectedIds, firstPageBreak = false) {
   const toast = setPrintToast('포트폴리오 생성 중…');
   try {
     const projIds = selectedIds.filter(id => id.startsWith('project'));
@@ -825,7 +843,7 @@ async function executePrint(selectedIds) {
       return;
     }
 
-    win.document.write(buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHTML }));
+    win.document.write(buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHTML, firstPageBreak }));
     win.document.close();
     win.focus();
     setTimeout(() => { win.print(); toast.classList.remove('visible'); }, 800);
@@ -836,7 +854,7 @@ async function executePrint(selectedIds) {
   }
 }
 
-function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHTML }) {
+function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHTML, firstPageBreak = false }) {
   const varsCss = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
 
   // Selected project IDs in order
@@ -1080,7 +1098,9 @@ html.read .article-overview { color: var(--text-1); }
 
 @media print {
   body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .print-project + .print-project { page-break-before: always; }
+  ${firstPageBreak
+    ? '.print-project { page-break-before: always; }'
+    : '.print-project + .print-project { page-break-before: always; }'}
   .print-toc { page-break-after: always; }
 }
 </style>
