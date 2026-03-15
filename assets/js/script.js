@@ -1,12 +1,12 @@
-﻿// ?? Project Data ????????????????????????????????????????????????????????????
-// 蹂몃Ц HTML? assets/projects/<id>.html ?뚯씪濡?遺꾨━?섏뼱 fetch濡?濡쒕뱶?⑸땲??
+// ── Project Data ────────────────────────────────────────────────────────────
+// 본문 HTML은 assets/projects/<id>.html 파일로 분리되어 fetch로 로드됩니다.
 const projects = {
   project1: {
-    title:    'LeRobot ??Bimanual Teleoperation',
+    title:    'LeRobot — Bimanual Teleoperation',
     date:     '2025.04 ~ 2025.05',
     tags:     ['ROS2', 'Python', 'ACT', 'Imitation Learning'],
     image:    'https://picsum.photos/seed/lerobot/900/506',
-    overview: 'Hugging Face LeRobot 湲곕컲 ?묒넀 ?묒쓳 濡쒕큸???쒖뼱 ?꾨줈?앺듃?낅땲?? ?뱀틺 3?쨌濡쒕큸??2媛쒕줈 ?곗씠?곕? ?섏쭛?섍퀬 ACT 紐⑤뜽???숈뒿??6媛??쒖뒪?щ? ?먯쑉 ?섑뻾?섎룄濡?援ы쁽?덉뒿?덈떎. SSAFY 12湲??먯쑉 ?꾨줈?앺듃.',
+    overview: 'Hugging Face LeRobot 기반 양손 협응 로봇팔 제어 프로젝트입니다. 웹캠 3대·로봇팔 2개로 데이터를 수집하고 ACT 모델을 학습해 6개 태스크를 자율 수행하도록 구현했습니다. SSAFY 12기 자율 프로젝트.',
     src:      'assets/projects/project1.html',
     links: [
       { label: 'GitHub',    href: 'https://github.com/fridec13' },
@@ -19,7 +19,7 @@ const projects = {
     date:     '2025.06 ~',
     tags:     ['Jekyll', 'GitHub Pages', 'SCSS', 'TypeScript'],
     image:    'https://picsum.photos/seed/jekyllblog/900/506',
-    overview: 'GitHub Pages 湲곕컲 媛쒖씤 湲곗닠 釉붾줈洹몄엯?덈떎. 湲곗〈 ?뚮쭏瑜?泥섏쓬遺???ъ꽕怨꾪븯???ㅽ겕紐⑤뱶, 移댄뀒怨좊━, ??꾨씪?? 3D 紐⑤뜽 酉곗뼱 ?깆쓽 湲곕뒫??吏곸젒 援ы쁽?덉뒿?덈떎.',
+    overview: 'GitHub Pages 기반 개인 기술 블로그입니다. 기존 테마를 처음부터 재설계하여 다크모드, 카테고리, 타임라인, 3D 모델 뷰어 등의 기능을 직접 구현했습니다.',
     src:      'assets/projects/project2.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13/fridec13.github.io' },
@@ -31,7 +31,7 @@ const projects = {
     date:     '2026.03 ~',
     tags:     ['GSAP', 'HTML/CSS', 'Vanilla JS'],
     image:    'https://picsum.photos/seed/gsapport/900/506',
-    overview: '?쒖닔 HTML, CSS, JavaScript? GSAP ?좊땲硫붿씠???쇱씠釉뚮윭由щ쭔?쇰줈 援ъ텞???ы듃?대━???섏씠吏?낅땲?? ?꾨젅?꾩썙???놁씠 遺?쒕윭???섏씠吏 ?꾪솚怨??명꽣?숈뀡??援ы쁽?덉뒿?덈떎.',
+    overview: '순수 HTML, CSS, JavaScript와 GSAP 애니메이션 라이브러리만으로 구축한 포트폴리오 페이지입니다. 프레임워크 없이 부드러운 페이지 전환과 인터랙션을 구현했습니다.',
     src:      'assets/projects/project3.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13/fridec13.github.io' },
@@ -43,7 +43,7 @@ const projects = {
     date:     '2026.03',
     tags:     ['Test', 'Code', 'Table', 'Mermaid'],
     image:    'https://picsum.photos/seed/demodoc/900/506',
-    overview: '肄붾뱶 釉붾줉, ?뚯씠釉? Mermaid 李⑦듃 ?뚮뜑留곸쓣 ?뺤씤?섍린 ?꾪븳 ?뚯뒪???꾪떚?댁엯?덈떎.',
+    overview: '코드 블록, 테이블, Mermaid 차트 렌더링을 확인하기 위한 테스트 아티클입니다.',
     src:      'assets/projects/project4.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
@@ -51,11 +51,11 @@ const projects = {
   },
 
   project5: {
-    title:    'ROBOCOP 濡쒖뺄 ?ы똿 諛?怨좊룄??,
+    title:    'ROBOCOP 로컬 포팅 및 고도화',
     date:     '2026.03.10 ~ 2026.03.12',
     tags:     ['ROS2', 'FastAPI', 'Vue3', 'Three.js', 'Python', 'MongoDB'],
     image:    'assets/images/robocop-3dmap.png',
-    overview: '臾댁씤 ?쒖같 濡쒕큸 愿???쒖뒪?쒖쓣 濡쒖뺄 ?섍꼍?쇰줈 ?ы룷?낇븯硫댁꽌, 誘명빐寃곕줈 ?⑥븯???좏쑕 CPU 75~80% ?먯쑀 臾몄젣瑜?援ъ“?곸쑝濡??щ텇?앺빐 0.3% ?섏??쇰줈 媛쒖꽑??由ы뙥?곕쭅 ?꾨줈?앺듃?낅땲??',
+    overview: '무인 순찰 로봇 관제 시스템을 로컬 환경으로 재포팅하면서, 미해결로 남았던 유휴 CPU 75~80% 점유 문제를 구조적으로 재분석해 0.3% 수준으로 개선한 리팩터링 프로젝트입니다.',
     src:      'assets/projects/project5.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
@@ -63,11 +63,11 @@ const projects = {
   },
 
   project6: {
-    title:    'ROBOCOP 臾댁씤 ?쒖같 濡쒕큸 愿??,
+    title:    'ROBOCOP 무인 순찰 로봇 관제',
     date:     '2025.01 ~ 2025.02',
     tags:     ['ROS2', 'FastAPI', 'Vue3', 'Gazebo', 'Docker', 'MongoDB'],
     image:    'https://picsum.photos/seed/robocop/900/506',
-    overview: 'SSAFY 12湲?怨듯넻 ?꾨줈?앺듃. ROS2쨌Gazebo 湲곕컲 濡쒕큸 2????ㅼ떆媛??꾩튂 異붿쟻쨌?먭꺽 ?쒖뼱쨌CCTV ?ㅽ듃由щ컢??Vue3 ??쒕낫?쒖뿉???듯빀 愿?쒗븯???붾（?섏엯?덈떎. FastAPI + Motor + Docker + Nginx ?꾩껜 ?ㅽ깮??7二??덉뿉 ?ㅺ퀎쨌援ъ텞?덉뒿?덈떎.',
+    overview: 'SSAFY 12기 공통 프로젝트. ROS2·Gazebo 기반 로봇 2대의 실시간 위치 추적·원격 제어·CCTV 스트리밍을 Vue3 대시보드에서 통합 관제하는 솔루션입니다. FastAPI + Motor + Docker + Nginx 전체 스택을 7주 안에 설계·구축했습니다.',
     src:      'assets/projects/project6.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
@@ -75,11 +75,11 @@ const projects = {
   },
 
   project7: {
-    title:    'GPT 而⑤쿋?댁뼱 怨듭젙 ?먮룞??,
+    title:    'GPT 컨베이어 공정 자동화',
     date:     '2024.10 ~ 2024.11',
     tags:     ['ROS2', 'YOLOv5', 'ChatGPT', 'Raspberry Pi', 'RoboDK', 'Python'],
     image:    'assets/images/dobot-demo.png',
-    overview: 'SSAFY 12湲?愿???꾨줈?앺듃 理쒖슦?섏긽 ?섏긽?? 4DOF Dobot Magician 濡쒕큸?붿씠 ?뚯꽦 紐낅졊(STT + ChatGPT)?쇰줈 ?쎌븻?뚮젅?댁뒪 ?묒뾽???섑뻾?섍퀬, YOLOv5濡?遺덈웾 遺?덉쓣 寃異쒗빐 ?쇱쫰踰좊━?뚯씠 而⑤쿋?댁뼱?먯꽌 ?먮룞 遺꾨쪟?⑸땲?? RoboDK ?붿????몄쐢?쇰줈 ?ㅼ떆媛??곹깭 ?숆린?붾룄 援ы쁽?덉뒿?덈떎.',
+    overview: 'SSAFY 12기 관통 프로젝트 최우수상 수상작. 4DOF Dobot Magician 로봇팔이 음성 명령(STT + ChatGPT)으로 픽앤플레이스 작업을 수행하고, YOLOv5로 불량 부품을 검출해 라즈베리파이 컨베이어에서 자동 분류합니다. RoboDK 디지털 트윈으로 실시간 상태 동기화도 구현했습니다.',
     src:      'assets/projects/project7.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
@@ -88,11 +88,11 @@ const projects = {
   },
 
   project8: {
-    title:    'KKUKKKUK ??諛섎젮?숇Ъ ?섎즺?뺣낫 愿由?,
+    title:    'KKUKKKUK — 반려동물 의료정보 관리',
     date:     '2025.03 ~ 2025.04',
     tags:     ['Solidity', 'React', 'Spring Boot', 'MetaMask', 'Ethereum', 'Flutter'],
     image:    'assets/images/kkukkkuk-logo.png',
-    overview: 'SSAFY 12湲?怨듯넻 ?꾨줈?앺듃. ?꾨씪?대퉿 ?대뜑由ъ? ?ㅽ듃?뚰겕(Besu)?먯꽌 媛?ㅻ퉬 ?놁씠 諛섎젮?숇Ъ 吏꾨즺 湲곕줉???ㅻ쭏?몄빻?몃옓?몃줈 愿由ы빀?덈떎. 蹂댄샇?먭? 蹂묒썝蹂?議고쉶 沅뚰븳??吏곸젒 遺??룻쉶?섑븯??DIDRegistry ?꾪궎?띿쿂濡??ㅺ퀎?덉뒿?덈떎.',
+    overview: 'SSAFY 12기 공통 프로젝트. 프라이빗 이더리움 네트워크(Besu)에서 가스비 없이 반려동물 진료 기록을 스마트컨트랙트로 관리합니다. 보호자가 병원별 조회 권한을 직접 부여·회수하는 DIDRegistry 아키텍처로 설계했습니다.',
     src:      'assets/projects/project8.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
@@ -100,14 +100,14 @@ const projects = {
   },
 };
 
-// ?? Global State ?????????????????????????????????????????????????????????????
+// ── Global State ─────────────────────────────────────────────────────────────
 const projectKeys  = Object.keys(projects).filter(k => k.startsWith('project'));
 let   currentPage  = 'home';
 let   panelIndex   = 0;
 let   isPanelAnim  = false;
 let   mermaidReady = false; // true after first successful mermaid.run()
 
-// ?? Article shell builder (body content loaded separately via fetch) ??????????
+// ── Article shell builder (body content loaded separately via fetch) ──────────
 function buildArticleShell(id) {
   const p = projects[id];
   if (!p) return '';
@@ -136,7 +136,7 @@ function buildArticleShell(id) {
   `;
 }
 
-// ?? Panel helpers ?????????????????????????????????????????????????????????????
+// ── Panel helpers ─────────────────────────────────────────────────────────────
 function getPanels() {
   return Array.from(document.querySelectorAll('.project-panel'));
 }
@@ -150,7 +150,7 @@ function updatePanelUI() {
   );
 }
 
-// ?? Init panels (async: fetches body HTML from separate files) ????????????????
+// ── Init panels (async: fetches body HTML from separate files) ────────────────
 async function initPanels() {
   const track  = document.getElementById('projects-track');
   const dotsEl = document.getElementById('panel-dots');
@@ -175,7 +175,7 @@ async function initPanels() {
     dotsEl.appendChild(dot);
   });
 
-  // Sidebar items ??jump to panel
+  // Sidebar items → jump to panel
   document.querySelectorAll('.project-item').forEach((item, i) => {
     item.addEventListener('click', () => goToPanel(i));
   });
@@ -194,7 +194,7 @@ async function initPanels() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       bodyEl.innerHTML = await res.text();
     } catch (err) {
-      bodyEl.innerHTML = '<p class="error">肄섑뀗痢좊? 遺덈윭?ㅼ? 紐삵뻽?듬땲??</p>';
+      bodyEl.innerHTML = '<p class="error">콘텐츠를 불러오지 못했습니다.</p>';
       console.error(`[initPanels] Failed to load ${p.src}:`, err);
     }
 
@@ -204,7 +204,7 @@ async function initPanels() {
   }));
 }
 
-// ?? Go to panel (蹂묓뭾 fold transition) ???????????????????????????????????????
+// ── Go to panel (병풍 fold transition) ───────────────────────────────────────
 function goToPanel(nextIndex, animate = true) {
   if (nextIndex < 0 || nextIndex >= projectKeys.length) return;
 
@@ -280,7 +280,7 @@ function goToPanel(nextIndex, animate = true) {
   }
 }
 
-// ?? Wheel ??panel scroll (desktop) ???????????????????????????????????????????
+// ── Wheel → panel scroll (desktop) ───────────────────────────────────────────
 function setupPanelScroll() {
   const wrapper = document.querySelector('.projects-track-wrapper');
 
@@ -292,7 +292,7 @@ function setupPanelScroll() {
     const atBottom = scrollTop + clientHeight >= scrollHeight - 2;
     const atTop    = scrollTop <= 0;
 
-    // Edge of panel ??switch panel; otherwise let it scroll naturally
+    // Edge of panel → switch panel; otherwise let it scroll naturally
     if (e.deltaY > 0 && atBottom) {
       e.preventDefault();
       goToPanel(panelIndex + 1);
@@ -310,7 +310,7 @@ function setupPanelScroll() {
   });
 }
 
-// ?? Page transition ???????????????????????????????????????????????????????????
+// ── Page transition ───────────────────────────────────────────────────────────
 function navigateTo(pageId) {
   if (pageId === currentPage) return;
 
@@ -393,9 +393,9 @@ function navigateTo(pageId) {
   document.querySelector('.logo').classList.toggle('active', pageId === 'home');
 }
 
-// ?? Mobile sidebar: overlay slide on scroll ???????????????????????????????????
+// ── Mobile sidebar: overlay slide on scroll ───────────────────────────────────
 // The sidebar is position:absolute over the article area (see CSS).
-// Sliding it via transform keeps the article's scroll position intact ??
+// Sliding it via transform keeps the article's scroll position intact —
 // the track-wrapper never resizes, so no layout reflow occurs.
 function setupMobileSidebarScroll() {
   const sidebar = document.querySelector('.projects-sidebar');
@@ -481,7 +481,7 @@ function setupMobileSidebarScroll() {
   sidebar._captureHeight = captureHeight;
 }
 
-// ?? Header / logo nav ?????????????????????????????????????????????????????????
+// ── Header / logo nav ─────────────────────────────────────────────────────────
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', e => {
     e.preventDefault();
@@ -489,7 +489,7 @@ document.querySelectorAll('[data-page]').forEach(el => {
   });
 });
 
-// ?? Theme toggle (3-mode: dark ??light ??read ??dark) ????????????????????????
+// ── Theme toggle (3-mode: dark → light → read → dark) ────────────────────────
 function initTheme() {
   const btn       = document.getElementById('theme-toggle');
   const html      = document.documentElement;
@@ -506,25 +506,25 @@ function initTheme() {
 
     if (mode === 'light') {
       html.classList.add('light');
-      btn.textContent = 'Aa';            // ???ㅼ쓬? 媛?낆꽦 紐⑤뱶
-      btn.title       = '媛?낆꽦 紐⑤뱶濡??꾪솚';
+      btn.textContent = 'Aa';            // → 다음은 가독성 모드
+      btn.title       = '가독성 모드로 전환';
     } else if (mode === 'read') {
       html.classList.add('read');
-      btn.textContent = '??uFE0E';       // ???ㅼ쓬? ?ㅽ겕 紐⑤뱶
-      btn.title       = '?ㅽ겕 紐⑤뱶濡??꾪솚';
+      btn.textContent = '☾\uFE0E';       // → 다음은 다크 모드
+      btn.title       = '다크 모드로 전환';
     } else {
-      btn.textContent = '?\uFE0E';       // ???ㅼ쓬? ?쇱씠??紐⑤뱶
-      btn.title       = '?쇱씠??紐⑤뱶濡??꾪솚';
+      btn.textContent = '☀\uFE0E';       // → 다음은 라이트 모드
+      btn.title       = '라이트 모드로 전환';
     }
 
-    // highlight.js ?뚮쭏 援먯껜
+    // highlight.js 테마 교체
     if (hljsTheme) {
       hljsTheme.href = isDark ? HLJS_DARK : HLJS_LIGHT;
     }
 
     localStorage.setItem('theme', mode);
 
-    // Mermaid ?뚮쭏 ?щ젋?붾쭅
+    // Mermaid 테마 재렌더링
     if (window.mermaid && mermaidReady) {
       mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default' });
       document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
@@ -538,19 +538,19 @@ function initTheme() {
     }
   }
 
-  // ?대┃: dark ??light ??read ??dark ?쒗솚
+  // 클릭: dark → light → read → dark 순환
   btn.addEventListener('click', () => {
     const cur  = localStorage.getItem('theme') || 'dark';
     const next = cur === 'dark' ? 'light' : cur === 'light' ? 'read' : 'dark';
     applyTheme(next);
   });
 
-  // ??λ맂 ?ㅼ젙 蹂듭썝
+  // 저장된 설정 복원
   const saved = localStorage.getItem('theme');
   if (saved === 'light' || saved === 'read') applyTheme(saved);
 }
 
-// ?? GSAP-controlled snap scroll + section enter animations ???????????????????
+// ── GSAP-controlled snap scroll + section enter animations ───────────────────
 function setupSnapAnimations(pageEl) {
   const allSections  = Array.from(pageEl.querySelectorAll('.snap-section'));
   const animSections = Array.from(pageEl.querySelectorAll('[data-snap-animate]'));
@@ -581,7 +581,7 @@ function setupSnapAnimations(pageEl) {
     });
   }
 
-  // Wheel ??snap (desktop only; mobile scrolls normally)
+  // Wheel → snap (desktop only; mobile scrolls normally)
   pageEl.addEventListener('wheel', e => {
     if (window.innerWidth <= 768) return;
     e.preventDefault();
@@ -623,7 +623,7 @@ function setupSnapAnimations(pageEl) {
   });
 }
 
-// ?? Init ??????????????????????????????????????????????????????????????????????
+// ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   if (window.mermaid) {
     const isDark = !document.documentElement.classList.contains('light');
@@ -635,7 +635,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Wait for all article HTML files to load
   await initPanels();
 
-  // Save mermaid source text now, but DO NOT call mermaid.run() yet ??
+  // Save mermaid source text now, but DO NOT call mermaid.run() yet —
   // #page-projects is still display:none, and mermaid needs visible dimensions.
   // Actual rendering happens in navigateTo() when the page becomes visible.
   if (window.mermaid) {
@@ -661,7 +661,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     .from('.scroll-hint',{ opacity: 0, duration: 0.5, ease: 'power2.out' }, '-=0.1');
 });
 
-// ?? Print Editor (Easter egg: Ctrl+Shift+P) ??????????????????????????????????
+// ── Print Editor (Easter egg: Ctrl+Shift+P) ──────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.shiftKey && e.key === 'P') {
     e.preventDefault();
@@ -669,10 +669,9 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ?? Data ??????????????????????????????????????????????????????????????????????
 function getPrintItems() {
   return [
-    { id: 'header',  label: '?ㅻ뜑 / ?곕씫泥?,        type: 'meta' },
+    { id: 'header',  label: '헤더 / 연락처',        type: 'meta' },
     { id: 'history', label: 'History & Education', type: 'meta' },
     ...projectKeys.map(k => ({
       id:    k,
@@ -683,10 +682,8 @@ function getPrintItems() {
   ];
 }
 
-// ?? Editor open / close ???????????????????????????????????????????????????????
 function openPrintEditor() {
   if (document.getElementById('print-editor')) return;
-
   const overlay = document.createElement('div');
   overlay.id = 'print-editor';
   overlay.className = 'pe-overlay';
@@ -703,50 +700,47 @@ function closePrintEditor() {
   setTimeout(() => el.remove(), 220);
 }
 
-// ?? Editor HTML ???????????????????????????????????????????????????????????????
 function buildEditorHTML(items) {
-  const rows = items.map((item, i) => `
+  const rows = items.map(item => `
     <li class="pe-item" data-id="${item.id}">
-      <span class="pe-grip">??떘</span>
+      <span class="pe-grip">⋮⋮</span>
       <input type="checkbox" class="pe-check" id="pec-${item.id}" checked>
       <label class="pe-name" for="pec-${item.id}">
         ${item.label}${item.date ? `<span class="pe-date">${item.date}</span>` : ''}
       </label>
       <div class="pe-btns">
-        <button class="pe-arrow pe-up"   title="?꾨줈">??/button>
-        <button class="pe-arrow pe-down" title="?꾨옒濡?>??/button>
+        <button class="pe-arrow pe-up"   title="위로">↑</button>
+        <button class="pe-arrow pe-down" title="아래로">↓</button>
       </div>
     </li>`).join('');
 
   return `
     <div class="pe-panel">
       <div class="pe-header">
-        <span class="pe-title">?몄뇙 ?먮뵒??/span>
-        <button class="pe-close" title="?リ린">??/button>
+        <span class="pe-title">인쇄 에디터</span>
+        <button class="pe-close" title="닫기">✕</button>
       </div>
-      <p class="pe-hint">?ы븿???뱀뀡???좏깮?섍퀬 ?쒖꽌瑜?議곗젙?섏꽭??/p>
+      <p class="pe-hint">포함할 섹션을 선택하고 순서를 조정하세요</p>
       <ul class="pe-list">${rows}</ul>
       <div class="pe-footer">
-        <button class="pe-cancel">痍⑥냼</button>
-        <button class="pe-print-btn">??nbsp; ?몄뇙</button>
+        <button class="pe-cancel">취소</button>
+        <button class="pe-print-btn">⎙&nbsp; 인쇄</button>
       </div>
     </div>`;
 }
 
-// ?? Editor events ?????????????????????????????????????????????????????????????
 function bindEditorEvents(overlay) {
   const list = overlay.querySelector('.pe-list');
 
-  // Close
   overlay.querySelector('.pe-close').addEventListener('click', closePrintEditor);
   overlay.querySelector('.pe-cancel').addEventListener('click', closePrintEditor);
   overlay.addEventListener('click', e => { if (e.target === overlay) closePrintEditor(); });
 
-  // Escape key
-  const onKey = e => { if (e.key === 'Escape') { closePrintEditor(); document.removeEventListener('keydown', onKey); } };
+  const onKey = e => {
+    if (e.key === 'Escape') { closePrintEditor(); document.removeEventListener('keydown', onKey); }
+  };
   document.addEventListener('keydown', onKey);
 
-  // Up / Down arrows
   list.addEventListener('click', e => {
     const btn = e.target.closest('.pe-arrow');
     if (!btn) return;
@@ -761,13 +755,11 @@ function bindEditorEvents(overlay) {
     refreshArrows(list);
   });
 
-  // Dim row when unchecked
   list.addEventListener('change', e => {
     if (e.target.classList.contains('pe-check'))
       e.target.closest('.pe-item').classList.toggle('pe-off', !e.target.checked);
   });
 
-  // Print
   overlay.querySelector('.pe-print-btn').addEventListener('click', () => {
     const selected = [...list.querySelectorAll('.pe-item')]
       .filter(li => li.querySelector('.pe-check').checked)
@@ -787,29 +779,31 @@ function refreshArrows(list) {
   });
 }
 
-// ?? Toast ?????????????????????????????????????????????????????????????????????
 function setPrintToast(msg) {
   let el = document.getElementById('print-toast');
-  if (!el) { el = document.createElement('div'); el.id = 'print-toast'; document.body.appendChild(el); }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'print-toast';
+    document.body.appendChild(el);
+  }
   el.textContent = msg;
   el.classList.add('visible');
   return el;
 }
 
-// ?? Execute print ?????????????????????????????????????????????????????????????
 async function executePrint(selectedIds) {
-  const toast = setPrintToast('?ы듃?대━???앹꽦 以묅?);
+  const toast = setPrintToast('포트폴리오 생성 중…');
   try {
     const projIds = selectedIds.filter(id => id.startsWith('project'));
     const bodyMap = {};
     await Promise.all(projIds.map(k =>
       fetch(projects[k].src).then(r => r.text())
         .then(html => { bodyMap[k] = html; })
-        .catch(()  => { bodyMap[k] = '<p>?댁슜??遺덈윭?????놁뒿?덈떎.</p>'; })
+        .catch(() => { bodyMap[k] = '<p>내용을 불러올 수 없습니다.</p>'; })
     ));
 
     const htmlEl     = document.documentElement;
-    const themeClass = htmlEl.classList.contains('read') ? 'read' :
+    const themeClass = htmlEl.classList.contains('read')  ? 'read'  :
                        htmlEl.classList.contains('light') ? 'light' : '';
     const cs = getComputedStyle(htmlEl);
     const v  = n => cs.getPropertyValue(n).trim();
@@ -821,14 +815,13 @@ async function executePrint(selectedIds) {
     const base = window.location.origin +
       window.location.pathname.replace(/\/[^/]*$/, '').replace(/\/$/, '');
 
-    // History: grab only the grid + cert columns (avoid snap-section wrappers)
     const historyGrid = document.querySelector('.history-grid');
     const historyHTML = historyGrid ? historyGrid.outerHTML : '';
 
-    toast.textContent = '?꾨┛??李??닿린 以묅?;
+    toast.textContent = '프린트 창 열기 중…';
     const win = window.open('', '_blank');
     if (!win) {
-      setPrintToast('?앹뾽??李⑤떒?섏뿀?듬땲?? ?앹뾽 ?덉슜 ???ㅼ떆 ?쒕룄?섏꽭??');
+      setPrintToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.');
       setTimeout(() => toast.classList.remove('visible'), 3000);
       return;
     }
@@ -839,26 +832,27 @@ async function executePrint(selectedIds) {
     setTimeout(() => { win.print(); toast.classList.remove('visible'); }, 800);
   } catch (err) {
     console.error(err);
-    setPrintToast('?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.');
+    setPrintToast('오류가 발생했습니다.');
     setTimeout(() => toast.classList.remove('visible'), 3000);
   }
 }
 
-// ?? Build print document ?????????????????????????????????????????????????????
 function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHTML }) {
   const varsCss = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
 
-  // TOC ??only from selected project IDs in order
+  // Selected project IDs in order
   const selectedProjects = selectedIds.filter(id => id.startsWith('project'));
+
+  // TOC — only selected projects
   const tocItems = selectedProjects.map(k =>
     `<li><a href="#proj-${k}">${projects[k].title}</a><span class="toc-date">${projects[k].date}</span></li>`
   ).join('');
 
-  // Sections in selected order
+  // Build sections in user-defined order
   const sections = selectedIds.map(id => {
     if (id === 'header') return `
 <div class="print-header">
-  <div class="print-name">源?깊썕</div>
+  <div class="print-name">김성훈</div>
   <div class="print-contacts">
     <span>maybecold@naver.com</span>
     <span>blog.naver.com/maybecold</span>
@@ -872,10 +866,16 @@ function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHT
   ${historyHTML}
 </div>`;
 
+    if (id === 'toc') return `
+<div class="print-toc">
+  <div class="section-label">Projects</div>
+  <ol>${tocItems}</ol>
+</div>`;
+
     if (id.startsWith('project')) {
-      const p      = projects[id];
+      const p       = projects[id];
       const tagHtml = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
-      const body   = fixPrintPaths(bodyMap[id] || '', base);
+      const body    = fixPrintPaths(bodyMap[id] || '', base);
       return `
 <section class="print-project" id="proj-${id}">
   <div class="proj-header">
@@ -894,60 +894,137 @@ function buildPrintDoc({ selectedIds, bodyMap, themeClass, vars, base, historyHT
 <html lang="ko"${themeClass ? ` class="${themeClass}"` : ''}>
 <head>
 <meta charset="UTF-8">
-<title>源?깊썕 ?ы듃?대━??/title>
+<title>김성훈 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
 :root {
 ${varsCss}
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-1); font-size: 13.5px; line-height: 1.75; }
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
 a { color: var(--accent); text-decoration: none; }
 
-/* Header */
-.print-header { padding: 2.5rem 3rem 1.8rem; border-bottom: 2px solid var(--accent); }
+/* ── Print header ── */
+.print-header {
+  padding: 2.5rem 3rem 1.8rem;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 0;
+}
 .print-name { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-1); }
-.print-contacts { margin-top: 0.5rem; display: flex; gap: 1.5rem; font-size: 0.82rem; color: var(--text-2); }
+.print-contacts {
+  margin-top: 0.5rem;
+  display: flex; gap: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
 
-/* Section label */
-.section-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+/* ── Section label ── */
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
 
-/* History */
+/* ── History ── */
 .print-history { padding: 2rem 3rem; }
-.history-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 4rem; width: 100%; }
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem 4rem;
+  width: 100%;
+}
 .timeline { display: flex; flex-direction: column; }
-.timeline-item { display: grid; grid-template-columns: 80px 1fr; gap: 0 1rem; position: relative; padding-bottom: 1.4rem; }
+.timeline-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0 1rem;
+  position: relative;
+  padding-bottom: 1.4rem;
+}
 .timeline-item:last-child { padding-bottom: 0; }
-.timeline-item::before { content: ''; position: absolute; left: 80px; top: 6px; bottom: 0; width: 1px; background: var(--border); }
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 80px; top: 6px; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
 .timeline-item:last-child::before { display: none; }
-.tl-year { font-size: 0.7rem; font-weight: 600; color: var(--text-2); text-align: right; padding-top: 2px; }
+.tl-year {
+  font-size: 0.7rem; font-weight: 600;
+  color: var(--text-2); text-align: right; padding-top: 2px;
+}
 .tl-body { padding-left: 1.2rem; position: relative; }
-.tl-body::before { content: ''; position: absolute; left: -4px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.tl-body::before {
+  content: '';
+  position: absolute;
+  left: -4px; top: 7px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
 .tl-title { font-size: 0.88rem; font-weight: 600; color: var(--text-1); margin-bottom: 0.2rem; }
 .tl-sub   { font-size: 0.76rem; color: var(--text-2); line-height: 1.5; }
 .cert-col { display: flex; flex-direction: column; gap: 1.4rem; }
-.cert-group-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); margin-bottom: 0.6rem; }
+.cert-group-title {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-2); margin-bottom: 0.6rem;
+}
 .cert-items { display: flex; flex-direction: column; gap: 0.4rem; }
-.cert-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--text-1); }
-.cert-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.award-item { background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.8rem; line-height: 1.5; color: var(--text-2); }
+.cert-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.85rem; color: var(--text-1);
+}
+.cert-item::before {
+  content: ''; width: 4px; height: 4px;
+  border-radius: 50%; background: var(--accent); flex-shrink: 0;
+}
+.award-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.8rem; line-height: 1.5; color: var(--text-2);
+}
 .award-item strong { color: var(--text-1); display: block; margin-bottom: 0.15rem; }
 
-/* TOC */
+/* ── TOC ── */
 .print-toc { padding: 2rem 3rem; border-top: 1px solid var(--border); }
 .print-toc ol { padding-left: 1.5rem; }
-.print-toc li { padding: 0.3rem 0; font-size: 0.9rem; color: var(--text-1); }
+.print-toc li { padding: 0.3rem 0; color: var(--text-1); font-size: 0.9rem; }
 .toc-date { color: var(--text-2); font-size: 0.78em; margin-left: 0.75rem; }
 
-/* Project */
-.print-project { padding: 2.5rem 3rem; border-top: 1px solid var(--border); }
+/* ── Project ── */
+.print-project {
+  padding: 2.5rem 3rem;
+  border-top: 1px solid var(--border);
+}
 .proj-header { margin-bottom: 1.5rem; }
 .proj-title { font-size: 1.35rem; font-weight: 800; color: var(--text-1); margin-bottom: 0.2rem; }
 .proj-date  { font-size: 0.78rem; color: var(--text-2); }
 .article-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.7rem 0; }
-.tag { padding: 0.15rem 0.55rem; border: 1px solid var(--border); border-radius: 999px; font-size: 0.69rem; color: var(--text-2); }
+.tag {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.69rem; color: var(--text-2);
+}
 .article-overview { font-size: 0.88rem; color: var(--text-2); line-height: 1.75; }
 
-/* Article body */
+/* ── Article body ── */
 .article-body { font-size: 0.86rem; }
 .article-body h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-1); margin: 2rem 0 0.6rem; }
 .article-body h3 { font-size: 0.92rem; font-weight: 600; color: var(--text-1); margin: 1.2rem 0 0.35rem; }
@@ -960,47 +1037,71 @@ a { color: var(--accent); text-decoration: none; }
 .article-body th, .article-body td { border: 1px solid var(--border); padding: 0.35rem 0.55rem; }
 .article-body th { background: var(--bg-surface); font-weight: 600; color: var(--text-1); }
 .article-body td { color: var(--text-2); }
-.article-body pre { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1rem; font-size: 0.76rem; line-height: 1.6; margin: 0.8rem 0; white-space: pre-wrap; word-break: break-all; }
-.article-body code { font-family: 'Fira Code','Consolas',monospace; }
-.article-body :not(pre) > code { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 3px; padding: 0.1rem 0.3rem; font-size: 0.79rem; color: var(--text-1); }
+.article-body pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.9rem 1rem;
+  font-size: 0.76rem; line-height: 1.6; margin: 0.8rem 0;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+}
+.article-body code { font-family: 'Fira Code', 'Consolas', monospace; }
+.article-body :not(pre) > code {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 3px; padding: 0.1rem 0.3rem;
+  font-size: 0.79rem; color: var(--text-1);
+}
 .article-body figure { margin: 1rem 0; }
 .article-body img { max-width: 100%; border-radius: 6px; }
 .article-body figcaption { font-size: 0.75rem; color: var(--text-2); margin-top: 0.25rem; text-align: center; }
-.metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.6rem; margin: 0.9rem 0; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin: 0.9rem 0; }
 .metric-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; text-align: center; }
 .metric-value { display: block; font-size: 1.3rem; font-weight: 800; color: var(--accent); }
 .metric-label { display: block; font-size: 0.67rem; color: var(--text-2); margin-top: 0.15rem; }
-.mermaid { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.75rem; font-family: monospace; color: var(--text-2); white-space: pre; margin: 0.8rem 0; }
+
+/* Mermaid: show raw source as code block instead of broken diagram */
+.mermaid { display: block; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.75rem; font-family: monospace; color: var(--text-2); white-space: pre; margin: 0.8rem 0; }
 .mermaid svg { display: none; }
 
-/* Read mode */
+/* Read mode tag colors */
 html.read .tag { border-color: transparent; font-weight: 600; }
-html.read .article-tags .tag:nth-child(6n+1){background:#fee2e2;color:#991b1b}
-html.read .article-tags .tag:nth-child(6n+2){background:#fef3c7;color:#92400e}
-html.read .article-tags .tag:nth-child(6n+3){background:#dcfce7;color:#166534}
-html.read .article-tags .tag:nth-child(6n+4){background:#dbeafe;color:#1e40af}
-html.read .article-tags .tag:nth-child(6n+5){background:#f3e8ff;color:#6b21a8}
-html.read .article-tags .tag:nth-child(6n+6){background:#ccfbf1;color:#0f766e}
+html.read .article-tags .tag:nth-child(6n+1) { background:#fee2e2; color:#991b1b; }
+html.read .article-tags .tag:nth-child(6n+2) { background:#fef3c7; color:#92400e; }
+html.read .article-tags .tag:nth-child(6n+3) { background:#dcfce7; color:#166534; }
+html.read .article-tags .tag:nth-child(6n+4) { background:#dbeafe; color:#1e40af; }
+html.read .article-tags .tag:nth-child(6n+5) { background:#f3e8ff; color:#6b21a8; }
+html.read .article-tags .tag:nth-child(6n+6) { background:#ccfbf1; color:#0f766e; }
 html.read .article-body p,
 html.read .article-body ul li,
 html.read .article-body ol li { color: var(--text-1); }
 html.read .article-overview { color: var(--text-1); }
 
+/* Print media */
 @media print {
   body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-project { page-break-before: always; }
+  .print-toc { page-break-after: always; }
 }
 </style>
 </head>
 <body>
+
+<div class="print-header">
+  <div class="print-name">김성훈</div>
+  <div class="print-contacts">
+    <span>maybecold@naver.com</span>
+    <span>blog.naver.com/maybecold</span>
+    <span>github.com/fridec13</span>
+  </div>
+</div>
+
 ${sections}
+
 </body>
 </html>`;
 }
 
 function fixPrintPaths(html, base) {
+  // Convert relative asset paths to absolute so images load in new window
   return html
-    .replace(/src="assets\//g,  `src="${base}/assets/`)
+    .replace(/src="assets\//g, `src="${base}/assets/`)
     .replace(/href="assets\//g, `href="${base}/assets/`);
 }
-
