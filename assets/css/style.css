@@ -94,7 +94,7 @@ html.read .article-tags .tag:nth-child(6n+4) { background: #dbeafe; color: #1e40
 html.read .article-tags .tag:nth-child(6n+5) { background: #f3e8ff; color: #6b21a8; }
 html.read .article-tags .tag:nth-child(6n+6) { background: #ccfbf1; color: #0f766e; }
 
-/* ── Easter egg: print toast ───────────────────────────────── */
+/* ── Print toast ────────────────────────────────────────────── */
 #print-toast {
   position: fixed;
   bottom: 2rem;
@@ -113,10 +113,178 @@ html.read .article-tags .tag:nth-child(6n+6) { background: #ccfbf1; color: #0f76
   z-index: 9999;
   white-space: nowrap;
 }
-#print-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+#print-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Print editor overlay ───────────────────────────────────── */
+.pe-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
+.pe-overlay.visible { opacity: 1; }
+
+.pe-panel {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 500px;
+  max-width: 92vw;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  transform: translateY(8px);
+  transition: transform 0.22s ease;
+}
+.pe-overlay.visible .pe-panel { transform: translateY(0); }
+
+.pe-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pe-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-1);
+}
+.pe-close {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.pe-close:hover { background: var(--bg-hover); color: var(--text-1); }
+
+.pe-hint {
+  font-size: 0.76rem;
+  color: var(--text-2);
+  padding: 0.65rem 1.25rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.pe-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  padding: 0.3rem 0.7rem 0.5rem;
+}
+.pe-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 7px;
+  transition: background 0.13s;
+  user-select: none;
+}
+.pe-item:hover { background: var(--bg-hover); }
+.pe-item.pe-off { opacity: 0.42; }
+
+.pe-grip {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  opacity: 0.5;
+  cursor: grab;
+  letter-spacing: -1px;
+  flex-shrink: 0;
+}
+.pe-check {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.pe-name {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  line-height: 1.3;
+}
+.pe-date {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 400;
+}
+.pe-btns {
+  display: flex;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+.pe-arrow {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-2);
+  width: 24px;
+  height: 24px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.13s, color 0.13s;
+  padding: 0;
+}
+.pe-arrow:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-1); }
+.pe-arrow:disabled { opacity: 0.25; cursor: default; }
+
+.pe-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pe-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.pe-cancel:hover { background: var(--bg-hover); }
+.pe-print-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 7px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s;
+}
+.pe-print-btn:hover { opacity: 0.85; }
 
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
