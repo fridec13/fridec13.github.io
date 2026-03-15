@@ -1,9 +1,26 @@
 <p>
-  SSAFY 12기 관통 프로젝트로 개발하여 <strong>최우수상</strong>을 수상한 컨베이어 공정 자동화 시스템입니다.
-  4DOF Dobot Magician 로봇팔이 조립 부품을 번호로 구분해 픽앤플레이스 작업을 수행하고,
-  라즈베리파이 기반 컨베이어 벨트에서 YOLO로 불량 부품을 분류합니다.
-  STT + ChatGPT 파이프라인을 통해 음성 명령만으로 전체 공정을 제어할 수 있도록 구성했습니다.
+  SSAFY 12기 관통 프로젝트로 개발하여 <strong>최우수상</strong>을 수상한 AI 기반 음성 제어 로봇 공정 자동화 시스템입니다.
+  4DOF Dobot Magician 로봇팔, RealSense 카메라, 라즈베리파이 컨베이어를 ROS2로 통합하고,
+  STT + ChatGPT 파이프라인으로 음성 명령만으로 전체 공정을 제어합니다.
+  RoboDK 디지털 트윈을 통해 실시간 상태 동기화도 구현했습니다.
 </p>
+
+<hr>
+
+<h2>하드웨어 구성</h2>
+
+<figure>
+  <img src="assets/images/dobot-hardware.png" alt="Dobot 프로젝트 하드웨어 구성" />
+  <figcaption>Dobot Magician + RealSense D435i + 라즈베리파이5 컨베이어 + Rode 마이크 전체 구성</figcaption>
+</figure>
+
+<ul>
+  <li><strong>Dobot Magician</strong> — 4DOF 로봇팔, 픽앤플레이스 담당</li>
+  <li><strong>Intel RealSense D435i</strong> — 깊이 카메라, 부품 위치 인식</li>
+  <li><strong>Raspberry Pi 5</strong> — 컨베이어 벨트 모터 제어</li>
+  <li><strong>Rode 마이크</strong> — 음성 명령 입력</li>
+  <li><strong>Ubuntu (서버) / Windows (RoboDK)</strong> — 이중 OS 환경</li>
+</ul>
 
 <hr>
 
@@ -12,68 +29,100 @@
 <div class="mermaid">
 graph LR
   subgraph Input["입력"]
-    MIC["마이크<br/>음성 입력"]
-    CAM["카메라<br/>부품 인식"]
+    MIC["마이크\n음성 입력"]
+    CAM["RealSense\n부품 인식"]
   end
 
   subgraph AI["AI 처리"]
-    STT["RTZR STT<br/>음성 → 텍스트"]
-    GPT["ChatGPT API<br/>명령 의도 파싱"]
-    YOLO["YOLO<br/>불량 부품 검출"]
+    STT["RTZR STT\n음성 → 텍스트"]
+    GPT["ChatGPT API\n명령 의도 파싱"]
+    YOLO["YOLOv5\n불량 부품 검출"]
   end
 
-  subgraph ROS["ROS2 노드 패키지"]
-    VOICE_NODE["voice_command<br/>노드"]
-    PICK_NODE["pick_and_place<br/>노드"]
-    CONV_NODE["conveyor_ctrl<br/>노드"]
-    DETECT_NODE["defect_detect<br/>노드"]
+  subgraph ROS["ROS2 노드"]
+    VOICE_NODE["voice_command\n노드"]
+    PICK_NODE["pick_and_place\n노드"]
+    CONV_NODE["conveyor_ctrl\n노드"]
+    DETECT_NODE["defect_detect\n노드"]
   end
 
   subgraph HW["하드웨어"]
-    DOBOT["Dobot Magician<br/>4DOF 로봇팔"]
-    PI["Raspberry Pi<br/>컨베이어 벨트"]
+    DOBOT["Dobot Magician\n4DOF 로봇팔"]
+    PI["Raspberry Pi\n컨베이어 벨트"]
+    TWIN["RoboDK\n디지털 트윈"]
   end
 
   MIC --> STT --> GPT --> VOICE_NODE
   CAM --> YOLO --> DETECT_NODE
   VOICE_NODE --> PICK_NODE --> DOBOT
   DETECT_NODE --> CONV_NODE --> PI
+  PI -->|"소켓 통신"| TWIN
 </div>
+
+<figure>
+  <img src="assets/images/dobot-ros2-workflow.png" alt="ROS2 워크플로우" />
+  <figcaption>Integration.launch.py 로 초기화되는 ROS2 노드 간 토픽 흐름</figcaption>
+</figure>
 
 <hr>
 
-<h2>주요 기능</h2>
+<h2>음성 제어 — STT + ChatGPT 파이프라인</h2>
 
-<table>
-  <thead><tr><th>기능</th><th>설명</th></tr></thead>
-  <tbody>
-    <tr><td>음성 명령 제어</td><td>RTZR STT로 음성을 텍스트로 변환, ChatGPT로 공정 명령 의도를 파싱해 ROS2 토픽 발행</td></tr>
-    <tr><td>픽앤플레이스</td><td>Dobot Magician이 부품 번호를 인식하여 지정 위치로 이동·적재</td></tr>
-    <tr><td>불량 분류</td><td>YOLO(RoboFlow 사전 학습)로 컨베이어 위 부품 불량 여부 검출, 라즈베리파이 신호로 배출 처리</td></tr>
-    <tr><td>일상 대화</td><td>공정 명령 외 일반 질문도 ChatGPT로 응답 가능한 대화형 인터페이스 구성</td></tr>
-    <tr><td>공정 모니터링 UI</td><td>Qt 기반 GUI에서 현재 공정 상태, 부품 인식 결과, 불량 검출 이력 확인</td></tr>
-  </tbody>
-</table>
+<figure>
+  <img src="assets/images/dobot-stt-flow.png" alt="STT ChatGPT 파이프라인" />
+  <figcaption>RTZR STT → ChatGPT 명령 파싱 → ROS2 토픽 발행 흐름</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/images/dobot-yolo.png" alt="YOLO 객체 검출" />
+  <figcaption>YOLOv5 + RoboFlow 학습 데이터로 Board / Back / Broken 3종 분류</figcaption>
+</figure>
+
+<p>
+  ChatGPT는 사용자 발화를 <strong>공정 명령</strong>과 <strong>일상 대화</strong>로 구분합니다.
+  공정 명령은 JSON 구조체로 파싱되어 ROS2 토픽으로 발행되고,
+  일상 대화는 TTS 응답으로 돌아와 자연스러운 인터랙션을 제공합니다.
+</p>
+
+<hr>
+
+<h2>디지털 트윈</h2>
+
+<figure>
+  <img src="assets/images/dobot-digitaltwin.png" alt="RoboDK 디지털 트윈" />
+  <figcaption>RoboDK 디지털 트윈 — 라즈베리파이와 소켓 통신으로 컨베이어 현재 작업 상태 실시간 반영</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/images/dobot-panel.png" alt="공정 모니터링 패널" />
+  <figcaption>공정 모니터링 패널 — 부품 인식 결과 및 불량 검출 이력 확인</figcaption>
+</figure>
+
+<hr>
+
+<h2>시연 영상</h2>
+
+<figure>
+  <img src="assets/images/dobot-demo.png" alt="시연 장면" />
+  <figcaption>
+    전체 시연 장면 —
+    <a href="https://youtu.be/IU831hxLje0" target="_blank" rel="noopener">YouTube 영상 보기 ↗</a>
+  </figcaption>
+</figure>
 
 <hr>
 
 <h2>담당 역할</h2>
 
-<h3>라즈베리파이 컨베이어 연동</h3>
-<p>
-  라즈베리파이에서 모터 드라이버를 제어하는 ROS2 노드를 구현했습니다.
-  YOLO 검출 결과를 구독하여 불량 부품이 배출 구간에 도달하면 컨베이어를 정지하고
-  서보모터로 불량품을 분리하는 로직을 작성했습니다.
-</p>
-
 <h3>픽앤플레이스 노드 + ChatGPT 연동</h3>
 <p>
   ChatGPT로부터 파싱된 명령 구조체를 구독하는 ROS2 노드를 구현하고,
   Dobot SDK API를 호출하여 순차 동작(이동 → 흡착 → 적재)을 수행하는 픽앤플레이스 파이프라인을 작성했습니다.
-  음성으로 "3번 부품 좌측에 놓아줘"처럼 말하면 GPT가 <code>{"action": "pick_and_place", "part_id": 3, "position": "left"}</code> 형태로 변환해 노드에 전달하도록 설계했습니다.
+  음성으로 "3번 부품 좌측에 놓아줘"라고 말하면 GPT가
+  <code>{"action": "pick_and_place", "part_id": 3, "position": "left"}</code> 형태로 파싱해 노드에 전달합니다.
 </p>
 
-<pre><code class="language-python"># pick_and_place_node.py (핵심 로직)
+<pre><code class="language-python"># pick_and_place_node.py
 def command_callback(self, msg: String):
     cmd = json.loads(msg.data)
     if cmd["action"] == "pick_and_place":
@@ -83,6 +132,13 @@ def command_callback(self, msg: String):
         self.robot.move_to(PLACE_POSITIONS[cmd["position"]])
         self.robot.suction_off()
         self.get_logger().info(f"Part {cmd['part_id']} placed at {cmd['position']}")</code></pre>
+
+<h3>라즈베리파이 컨베이어 연동</h3>
+<p>
+  라즈베리파이에서 모터 드라이버를 제어하는 ROS2 노드를 구현했습니다.
+  YOLO 검출 결과를 구독하여 불량 부품이 배출 구간에 도달하면 컨베이어를 정지하고
+  서보모터로 불량품을 분리하는 로직을 작성했습니다.
+</p>
 
 <h3>발표 및 발표자료</h3>
 <p>
@@ -95,12 +151,9 @@ def command_callback(self, msg: String):
 <h2>기술적 도전 — 실시간 STT 지연 최소화</h2>
 
 <p>
-  음성 명령 방식의 가장 큰 과제는 STT 응답 지연이었습니다.
-  RTZR STT API는 발화가 끝난 시점부터 결과 반환까지 평균 1~2초의 지연이 있어,
+  RTZR STT API는 발화 종료 시점부터 결과 반환까지 평균 1~2초의 지연이 있어
   로봇 동작 시작 전에 긴 정지 구간이 생기는 문제가 있었습니다.
-</p>
-<p>
-  이를 줄이기 위해 STT 요청을 별도 비동기 스레드에서 처리하고,
+  STT 요청을 별도 비동기 스레드에서 처리하고,
   ChatGPT 파싱 단계를 최대한 짧은 프롬프트로 최적화하여
   전체 음성→동작 시작 지연을 약 3~4초 수준으로 유지했습니다.
 </p>
@@ -112,11 +165,12 @@ def command_callback(self, msg: String):
 <table>
   <thead><tr><th>분류</th><th>기술</th></tr></thead>
   <tbody>
-    <tr><td>로봇 제어</td><td>ROS2, Dobot Magician SDK, 4DOF IK 기반 좌표 변환</td></tr>
-    <tr><td>AI / 비전</td><td>YOLO (RoboFlow 학습), OpenCV</td></tr>
+    <tr><td>로봇 제어</td><td>ROS2 Humble, Dobot Magician SDK</td></tr>
+    <tr><td>AI / 비전</td><td>YOLOv5 (RoboFlow 학습), OpenCV, Intel RealSense D435i</td></tr>
     <tr><td>음성 / NLP</td><td>RTZR STT API, ChatGPT API (OpenAI)</td></tr>
-    <tr><td>임베디드</td><td>Raspberry Pi, 모터 드라이버, 서보모터</td></tr>
-    <tr><td>UI</td><td>Qt (Python PyQt)</td></tr>
+    <tr><td>임베디드</td><td>Raspberry Pi 5, 모터 드라이버, 서보모터</td></tr>
+    <tr><td>디지털 트윈</td><td>RoboDK (소켓 통신 연동)</td></tr>
+    <tr><td>UI</td><td>Qt (PyQt)</td></tr>
     <tr><td>언어</td><td>Python 3.10</td></tr>
   </tbody>
 </table>

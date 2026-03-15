@@ -77,12 +77,13 @@ const projects = {
   project7: {
     title:    'GPT 컨베이어 공정 자동화',
     date:     '2024.10 ~ 2024.11',
-    tags:     ['ROS2', 'YOLO', 'ChatGPT', 'Raspberry Pi', 'Python'],
-    image:    'https://picsum.photos/seed/conveyor/900/506',
-    overview: 'SSAFY 12기 관통 프로젝트 최우수상 수상작. 4DOF Dobot Magician 로봇팔이 음성 명령(STT + ChatGPT)으로 픽앤플레이스 작업을 수행하고, YOLO로 불량 부품을 검출해 라즈베리파이 컨베이어에서 자동 분류하는 공정 자동화 시스템입니다.',
+    tags:     ['ROS2', 'YOLOv5', 'ChatGPT', 'Raspberry Pi', 'RoboDK', 'Python'],
+    image:    'assets/images/dobot-demo.png',
+    overview: 'SSAFY 12기 관통 프로젝트 최우수상 수상작. 4DOF Dobot Magician 로봇팔이 음성 명령(STT + ChatGPT)으로 픽앤플레이스 작업을 수행하고, YOLOv5로 불량 부품을 검출해 라즈베리파이 컨베이어에서 자동 분류합니다. RoboDK 디지털 트윈으로 실시간 상태 동기화도 구현했습니다.',
     src:      'assets/projects/project7.html',
     links: [
       { label: 'GitHub', href: 'https://github.com/fridec13' },
+      { label: 'YouTube', href: 'https://youtu.be/IU831hxLje0' },
     ],
   },
 
