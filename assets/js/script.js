@@ -660,3 +660,337 @@ window.addEventListener('DOMContentLoaded', async () => {
     .from('.hero-desc',  { y: 30,  opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
     .from('.scroll-hint',{ opacity: 0, duration: 0.5, ease: 'power2.out' }, '-=0.1');
 });
+
+// ── Easter egg: Ctrl+Shift+P → print portfolio ────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+    e.preventDefault();
+    triggerPortfolioPrint();
+  }
+});
+
+function setPrintToast(msg) {
+  let el = document.getElementById('print-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'print-toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('visible');
+  return el;
+}
+
+async function triggerPortfolioPrint() {
+  const toast = setPrintToast('포트폴리오 생성 중…');
+
+  try {
+    // Fetch all project articles in parallel
+    const bodies = await Promise.all(
+      projectKeys.map(k =>
+        fetch(projects[k].src)
+          .then(r => r.text())
+          .catch(() => '<p>내용을 불러올 수 없습니다.</p>')
+      )
+    );
+
+    // Current theme class
+    const htmlEl    = document.documentElement;
+    const themeClass = htmlEl.classList.contains('read')  ? 'read'  :
+                       htmlEl.classList.contains('light') ? 'light' : '';
+
+    // CSS variable values at current theme
+    const cs = getComputedStyle(htmlEl);
+    const v  = name => cs.getPropertyValue(name).trim();
+    const vars = {
+      '--bg':         v('--bg'),
+      '--bg-surface': v('--bg-surface'),
+      '--bg-hover':   v('--bg-hover'),
+      '--border':     v('--border'),
+      '--text-1':     v('--text-1'),
+      '--text-2':     v('--text-2'),
+      '--accent':     v('--accent'),
+    };
+
+    // Base URL to fix relative asset paths
+    const base = window.location.origin +
+      window.location.pathname.replace(/\/[^/]*$/, '').replace(/\/$/, '');
+
+    // History section inner HTML
+    const historyEl  = document.querySelector('.history-grid');
+    const historyHTML = historyEl ? historyEl.outerHTML : '';
+
+    toast.textContent = '프린트 창 열기 중…';
+
+    const win = window.open('', '_blank');
+    if (!win) {
+      setPrintToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.');
+      setTimeout(() => toast.classList.remove('visible'), 3000);
+      return;
+    }
+
+    win.document.write(buildPrintDoc({ bodies, themeClass, vars, base, historyHTML }));
+    win.document.close();
+    win.focus();
+    setTimeout(() => {
+      win.print();
+      toast.classList.remove('visible');
+    }, 800);
+
+  } catch (err) {
+    console.error(err);
+    setPrintToast('오류가 발생했습니다.');
+    setTimeout(() => toast.classList.remove('visible'), 3000);
+  }
+}
+
+function buildPrintDoc({ bodies, themeClass, vars, base, historyHTML }) {
+  const varsCss = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
+
+  // TOC
+  const tocItems = projectKeys.map((k, i) =>
+    `<li><a href="#proj-${k}">${projects[k].title}</a><span class="toc-date">${projects[k].date}</span></li>`
+  ).join('');
+
+  // Project sections
+  const projSections = projectKeys.map((k, i) => {
+    const p      = projects[k];
+    const tagHtml = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+    const body   = fixPrintPaths(bodies[i], base);
+    return `
+<section class="print-project" id="proj-${k}">
+  <div class="proj-header">
+    <h2 class="proj-title">${p.title}</h2>
+    <span class="proj-date">${p.date}</span>
+    <div class="article-tags">${tagHtml}</div>
+    <p class="article-overview">${p.overview}</p>
+  </div>
+  <div class="article-body">${body}</div>
+</section>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="ko"${themeClass ? ` class="${themeClass}"` : ''}>
+<head>
+<meta charset="UTF-8">
+<title>김성훈 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root {
+${varsCss}
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* ── Print header ── */
+.print-header {
+  padding: 2.5rem 3rem 1.8rem;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 0;
+}
+.print-name { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-1); }
+.print-contacts {
+  margin-top: 0.5rem;
+  display: flex; gap: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+/* ── Section label ── */
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+/* ── History ── */
+.print-history { padding: 2rem 3rem; }
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem 4rem;
+  width: 100%;
+}
+.timeline { display: flex; flex-direction: column; }
+.timeline-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0 1rem;
+  position: relative;
+  padding-bottom: 1.4rem;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 80px; top: 6px; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item:last-child::before { display: none; }
+.tl-year {
+  font-size: 0.7rem; font-weight: 600;
+  color: var(--text-2); text-align: right; padding-top: 2px;
+}
+.tl-body { padding-left: 1.2rem; position: relative; }
+.tl-body::before {
+  content: '';
+  position: absolute;
+  left: -4px; top: 7px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.tl-title { font-size: 0.88rem; font-weight: 600; color: var(--text-1); margin-bottom: 0.2rem; }
+.tl-sub   { font-size: 0.76rem; color: var(--text-2); line-height: 1.5; }
+.cert-col { display: flex; flex-direction: column; gap: 1.4rem; }
+.cert-group-title {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-2); margin-bottom: 0.6rem;
+}
+.cert-items { display: flex; flex-direction: column; gap: 0.4rem; }
+.cert-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.85rem; color: var(--text-1);
+}
+.cert-item::before {
+  content: ''; width: 4px; height: 4px;
+  border-radius: 50%; background: var(--accent); flex-shrink: 0;
+}
+.award-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.8rem; line-height: 1.5; color: var(--text-2);
+}
+.award-item strong { color: var(--text-1); display: block; margin-bottom: 0.15rem; }
+
+/* ── TOC ── */
+.print-toc { padding: 2rem 3rem; border-top: 1px solid var(--border); }
+.print-toc ol { padding-left: 1.5rem; }
+.print-toc li { padding: 0.3rem 0; color: var(--text-1); font-size: 0.9rem; }
+.toc-date { color: var(--text-2); font-size: 0.78em; margin-left: 0.75rem; }
+
+/* ── Project ── */
+.print-project {
+  padding: 2.5rem 3rem;
+  border-top: 1px solid var(--border);
+}
+.proj-header { margin-bottom: 1.5rem; }
+.proj-title { font-size: 1.35rem; font-weight: 800; color: var(--text-1); margin-bottom: 0.2rem; }
+.proj-date  { font-size: 0.78rem; color: var(--text-2); }
+.article-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.7rem 0; }
+.tag {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.69rem; color: var(--text-2);
+}
+.article-overview { font-size: 0.88rem; color: var(--text-2); line-height: 1.75; }
+
+/* ── Article body ── */
+.article-body { font-size: 0.86rem; }
+.article-body h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-1); margin: 2rem 0 0.6rem; }
+.article-body h3 { font-size: 0.92rem; font-weight: 600; color: var(--text-1); margin: 1.2rem 0 0.35rem; }
+.article-body p  { color: var(--text-2); line-height: 1.85; margin-bottom: 0.65rem; }
+.article-body ul, .article-body ol { padding-left: 1.4rem; color: var(--text-2); margin-bottom: 0.65rem; }
+.article-body li { margin-bottom: 0.18rem; }
+.article-body strong { color: var(--text-1); font-weight: 600; }
+.article-body hr { border: none; border-top: 1px solid var(--border); margin: 1.6rem 0; }
+.article-body table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 0.9rem 0; }
+.article-body th, .article-body td { border: 1px solid var(--border); padding: 0.35rem 0.55rem; }
+.article-body th { background: var(--bg-surface); font-weight: 600; color: var(--text-1); }
+.article-body td { color: var(--text-2); }
+.article-body pre {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.9rem 1rem;
+  font-size: 0.76rem; line-height: 1.6; margin: 0.8rem 0;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+}
+.article-body code { font-family: 'Fira Code', 'Consolas', monospace; }
+.article-body :not(pre) > code {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 3px; padding: 0.1rem 0.3rem;
+  font-size: 0.79rem; color: var(--text-1);
+}
+.article-body figure { margin: 1rem 0; }
+.article-body img { max-width: 100%; border-radius: 6px; }
+.article-body figcaption { font-size: 0.75rem; color: var(--text-2); margin-top: 0.25rem; text-align: center; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin: 0.9rem 0; }
+.metric-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; text-align: center; }
+.metric-value { display: block; font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+.metric-label { display: block; font-size: 0.67rem; color: var(--text-2); margin-top: 0.15rem; }
+
+/* Mermaid: show raw source as code block instead of broken diagram */
+.mermaid { display: block; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 1rem; font-size: 0.75rem; font-family: monospace; color: var(--text-2); white-space: pre; margin: 0.8rem 0; }
+.mermaid svg { display: none; }
+
+/* Read mode tag colors */
+html.read .tag { border-color: transparent; font-weight: 600; }
+html.read .article-tags .tag:nth-child(6n+1) { background:#fee2e2; color:#991b1b; }
+html.read .article-tags .tag:nth-child(6n+2) { background:#fef3c7; color:#92400e; }
+html.read .article-tags .tag:nth-child(6n+3) { background:#dcfce7; color:#166534; }
+html.read .article-tags .tag:nth-child(6n+4) { background:#dbeafe; color:#1e40af; }
+html.read .article-tags .tag:nth-child(6n+5) { background:#f3e8ff; color:#6b21a8; }
+html.read .article-tags .tag:nth-child(6n+6) { background:#ccfbf1; color:#0f766e; }
+html.read .article-body p,
+html.read .article-body ul li,
+html.read .article-body ol li { color: var(--text-1); }
+html.read .article-overview { color: var(--text-1); }
+
+/* Print media */
+@media print {
+  body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-project { page-break-before: always; }
+  .print-toc { page-break-after: always; }
+}
+</style>
+</head>
+<body>
+
+<div class="print-header">
+  <div class="print-name">김성훈</div>
+  <div class="print-contacts">
+    <span>maybecold@naver.com</span>
+    <span>blog.naver.com/maybecold</span>
+    <span>github.com/fridec13</span>
+  </div>
+</div>
+
+<div class="print-history">
+  <div class="section-label">History &amp; Education</div>
+  ${historyHTML}
+</div>
+
+<div class="print-toc">
+  <div class="section-label">Projects</div>
+  <ol>${tocItems}</ol>
+</div>
+
+${projSections}
+
+</body>
+</html>`;
+}
+
+function fixPrintPaths(html, base) {
+  // Convert relative asset paths to absolute so images load in new window
+  return html
+    .replace(/src="assets\//g, `src="${base}/assets/`)
+    .replace(/href="assets\//g, `href="${base}/assets/`);
+}
